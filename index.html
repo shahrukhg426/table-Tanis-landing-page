@@ -1,0 +1,2136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dulwich Table Tennis Club | South London's Premier TT Club</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #00C97A;
+    --green-dark: #009a5c;
+    --green-light: rgba(0,201,122,0.10);
+    --green-glow: rgba(0,201,122,0.25);
+    --navy: #0b1728;
+    --white: #ffffff;
+    --off-white: #f7f9fc;
+    --light-bg: #f0f4f8;
+    --card-bg: #ffffff;
+    --text-dark: #0d1b2a;
+    --text-mid: #2d4060;
+    --text-muted: #6b7fa0;
+    --border: rgba(0,0,0,0.08);
+    --shadow-sm: 0 2px 12px rgba(0,0,0,0.07);
+    --shadow-md: 0 8px 32px rgba(0,0,0,0.10);
+    --shadow-lg: 0 20px 60px rgba(0,0,0,0.13);
+    --shadow-green: 0 8px 32px rgba(0,201,122,0.25);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--white);
+    color: var(--text-dark);
+    overflow-x: hidden;
+  }
+
+  /* ─── SCROLL PROGRESS ─── */
+  #progress-bar {
+    position: fixed; top: 0; left: 0; height: 3px; z-index: 9999;
+    background: linear-gradient(90deg, var(--green), #00f598);
+    width: 0%; transition: width 0.1s;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5vw; height: 80px;
+    background: rgba(255,255,255,0.96);
+    border-bottom: 2px solid var(--green);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+    transition: box-shadow 0.3s;
+  }
+  nav.scrolled { box-shadow: 0 4px 30px rgba(0,0,0,0.13); }
+  .nav-logo {
+    text-decoration: none;
+    display: flex; align-items: center;
+    flex-shrink: 0;
+  }
+  .nav-logo img {
+    height: 68px;
+    width: auto;
+    display: block;
+    /* Remove white/any background — mix-blend-mode makes white transparent on light bg */
+    mix-blend-mode: multiply;
+    filter: contrast(1.05);
+    transition: opacity 0.2s;
+  }
+  .nav-logo img:hover { opacity: 0.85; }
+  .nav-logo span { display: none; }
+  .nav-links { display: flex; gap: 4px; list-style: none; }
+  .nav-links a {
+    color: var(--text-mid); text-decoration: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px; font-weight: 600;
+    letter-spacing: 1px; text-transform: uppercase;
+    padding: 8px 12px; border-radius: 4px;
+    transition: all 0.2s; white-space: nowrap;
+  }
+  .nav-links a:hover { color: var(--green); background: var(--green-light); }
+  .nav-links a.active { color: var(--green); }
+  .nav-cta {
+    background: var(--green) !important; color: #fff !important;
+    border-radius: 4px; padding: 10px 18px !important; font-weight: 700 !important;
+  }
+  .nav-cta:hover { background: var(--green-dark) !important; transform: scale(1.04); }
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 8px; }
+  .hamburger span { width: 26px; height: 2px; background: var(--text-dark); display: block; transition: 0.3s; border-radius: 2px; }
+  .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px,5px); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px,-5px); }
+
+  /* ─── MOBILE MENU ─── */
+  .mobile-menu {
+    display: none; flex-direction: column;
+    position: fixed; top: 80px; left: 0; right: 0; z-index: 999;
+    background: rgba(255,255,255,0.99);
+    padding: 20px 5vw 28px;
+    border-bottom: 2px solid var(--green);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  }
+  .mobile-menu.open { display: flex; animation: slideDown 0.25s ease; }
+  @keyframes slideDown { from { opacity:0; transform:translateY(-12px); } to { opacity:1; transform:translateY(0); } }
+  .mobile-menu a {
+    color: var(--text-dark); text-decoration: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 20px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.06);
+    transition: color 0.2s;
+  }
+  .mobile-menu a:hover { color: var(--green); }
+  .mobile-menu a.mobile-cta {
+    background: var(--green); color: #fff !important; text-align: center;
+    border-radius: 6px; padding: 14px; margin-top: 10px; border: none;
+  }
+
+  /* ─── HERO ─── */
+  #home {
+    min-height: 100vh; display: flex; align-items: center;
+    padding: 72px 5vw 0; position: relative; overflow: hidden;
+    background: linear-gradient(140deg, #f0faf5 0%, #ffffff 55%, #eaf7f1 100%);
+  }
+  .hero-bg-img { display: none; }
+  .hero-bg-overlay { display: none; }
+  /* Subtle dot grid pattern */
+  .hero-bg-pattern {
+    position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    background-image: radial-gradient(circle, rgba(0,185,107,0.12) 1px, transparent 1px);
+    background-size: 36px 36px;
+    mask-image: linear-gradient(135deg, transparent 0%, rgba(0,0,0,0.4) 40%, transparent 100%);
+    -webkit-mask-image: linear-gradient(135deg, transparent 0%, rgba(0,0,0,0.4) 40%, transparent 100%);
+  }
+  /* Top accent bar */
+  .hero-line-left {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 4px; z-index: 2;
+    background: linear-gradient(180deg, transparent 0%, #00b96b 25%, #00b96b 75%, transparent 100%);
+  }
+  /* Green soft glow behind image */
+  .hero-orb {
+    position: absolute; border-radius: 50%; pointer-events: none; z-index: 0;
+    filter: blur(90px);
+  }
+  .hero-orb-1 {
+    width: 520px; height: 520px; right: 5%; top: 10%;
+    background: radial-gradient(circle, rgba(0,185,107,0.18) 0%, transparent 70%);
+    animation: orbFloat 9s ease-in-out infinite;
+  }
+  .hero-orb-2 {
+    width: 280px; height: 280px; left: 30%; top: 60%;
+    background: radial-gradient(circle, rgba(0,185,107,0.08) 0%, transparent 70%);
+    animation: orbFloat 12s 3s ease-in-out infinite reverse;
+  }
+  @keyframes orbFloat {
+    0%,100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-24px) scale(1.04); }
+  }
+  .hero-accent-circle {
+    position: absolute; right: 18%; top: 50%; transform: translateY(-50%);
+    width: 440px; height: 440px; border-radius: 50%;
+    border: 1.5px solid rgba(0,185,107,0.18); pointer-events: none; z-index: 0;
+    animation: pulseRing 7s ease-in-out infinite;
+  }
+  .hero-accent-circle2 {
+    position: absolute; right: 22%; top: 50%; transform: translateY(-50%);
+    width: 560px; height: 560px; border-radius: 50%;
+    border: 1px solid rgba(0,185,107,0.09); pointer-events: none; z-index: 0;
+    animation: pulseRing 7s 2s ease-in-out infinite;
+  }
+  @keyframes pulseRing {
+    0%,100% { opacity:0.5; transform: translateY(-50%) scale(1); }
+    50% { opacity:1; transform: translateY(-50%) scale(1.02); }
+  }
+
+  /* ── TWO-COLUMN LAYOUT ── */
+  .hero-inner {
+    position: relative; z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: stretch;
+    width: 100%;
+    min-height: calc(100vh - 72px);
+    padding: 80px 0 100px;
+  }
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    position: relative;
+    z-index: 2;
+  }
+  .hero-visual {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .hero-img-frame {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    height: 100%;
+  }
+
+  /* Badge */
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(0,185,107,0.08);
+    border: 1px solid rgba(0,185,107,0.25);
+    color: #00963f;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 20px; margin-bottom: 26px;
+    animation: fadeUp 0.5s ease both;
+    width: fit-content;
+  }
+  .hero-badge-dot {
+    width: 6px; height: 6px; border-radius: 50%; background: #00b96b; flex-shrink:0;
+    animation: pulseDot 1.8s ease-in-out infinite;
+  }
+  @keyframes pulseDot {
+    0%,100% { opacity:1; transform:scale(1); }
+    50% { opacity:0.3; transform:scale(0.5); }
+  }
+
+  /* Title */
+  .hero-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(28px, 3.6vw, 48px);
+    line-height: 1.05; letter-spacing: 1.5px;
+    color: var(--text-dark);
+    animation: fadeUp 0.5s 0.1s ease both;
+  }
+  .hero-title .accent { color: #00b96b; }
+  .hero-title .outline-text {
+    -webkit-text-stroke: 2px #00b96b;
+    color: transparent;
+    display: block;
+  }
+
+  /* Divider */
+  .hero-divider {
+    width: 52px; height: 3px;
+    background: linear-gradient(90deg, #00b96b, rgba(0,185,107,0.15));
+    margin: 20px 0 18px; border-radius: 2px;
+    animation: fadeUp 0.5s 0.15s ease both;
+  }
+
+  /* Sub */
+  .hero-sub {
+    font-size: 15px; font-weight: 400; line-height: 1.8;
+    color: var(--text-mid);
+    margin: 0 0 32px; max-width: 440px;
+    animation: fadeUp 0.5s 0.2s ease both;
+  }
+  .hero-sub strong { color: var(--text-dark); font-weight: 700; }
+
+  /* Buttons */
+  .hero-btns {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    animation: fadeUp 0.5s 0.3s ease both;
+  }
+  .btn-primary {
+    background: #00b96b; color: #fff;
+    padding: 10px 24px; border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    text-decoration: none; display: inline-block;
+    transition: all 0.25s; border: none; cursor: pointer;
+    position: relative; overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,185,107,0.28);
+  }
+  .btn-primary::after {
+    content: ''; position: absolute; inset: 0;
+    background: rgba(255,255,255,0.12); transform: translateX(-100%); transition: transform 0.3s;
+  }
+  .btn-primary:hover::after { transform: translateX(0); }
+  .btn-primary:hover { background: #009a56; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,185,107,0.38); }
+  .btn-outline {
+    background: transparent; color: var(--text-dark);
+    padding: 9px 22px; border-radius: 4px;
+    border: 2px solid rgba(0,0,0,0.18);
+    font-family: 'Inter', sans-serif;
+    font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    text-decoration: none; display: inline-block; transition: all 0.25s;
+  }
+  .btn-outline:hover { border-color: #00b96b; color: #00b96b; transform: translateY(-2px); }
+
+  /* ── RIGHT: Player image column ── */
+  .hero-visual {
+    position: relative; display: flex; flex-direction: column;
+    align-items: stretch; z-index: 2; height: 100%;
+  }
+  .hero-img-frame {
+    position: relative; width: 100%; max-width: 560px;
+    display: flex; flex-direction: column; flex: 1; height: 100%;
+  }
+  /* Main image card */
+  .hero-img-main {
+    width: 100%; border-radius: 20px; overflow: hidden;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.14), 0 0 0 1px rgba(0,185,107,0.12);
+    position: relative; flex: 1; min-height: 530px; height: 100%;
+    background: linear-gradient(135deg, #c8f0dc, #e0f5ec);
+  }
+  .hero-img-main img {
+    width: 100%; height: 100%; object-fit: cover; object-position: top center;
+    display: block; transition: transform 0.7s ease;
+    position: absolute; inset: 0;
+  }
+  .hero-img-main:hover img { transform: scale(1.04); }
+  /* Green corner accent */
+  .hero-img-main::before {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 40%;
+    background: linear-gradient(transparent, rgba(0,185,107,0.12));
+    z-index: 1; border-radius: 0 0 20px 20px;
+  }
+  /* Floating badge on image */
+  .hero-img-badge {
+    position: absolute; bottom: 24px; left: 24px; z-index: 2;
+    background: #fff;
+    border-left: 4px solid #00b96b;
+    padding: 12px 18px; border-radius: 8px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+    animation: fadeUp 0.6s 0.5s ease both;
+  }
+  .hero-img-badge-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 20px; letter-spacing: 1px; color: var(--text-dark); line-height: 1.1;
+  }
+  .hero-img-badge-sub {
+    font-size: 11px; color: #00b96b; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase; margin-top: 2px;
+  }
+  /* Small floating trophy card top right */
+  .hero-img-card2 {
+    position: absolute; top: 20px; right: -20px; z-index: 3;
+    background: #00b96b; color: #fff;
+    padding: 14px 18px; border-radius: 10px;
+    box-shadow: 0 8px 28px rgba(0,185,107,0.35);
+    text-align: center; min-width: 100px;
+    animation: fadeUp 0.6s 0.6s ease both;
+  }
+  .hero-img-card2-num {
+    font-family: 'Oswald', sans-serif; font-size: 28px; line-height: 1; color: #fff;
+  }
+  .hero-img-card2-label {
+    font-size: 9px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: rgba(255,255,255,0.80); margin-top: 3px;
+  }
+  /* Decorative green ring behind image */
+  .hero-img-ring {
+    position: absolute; top: -20px; left: -20px; right: -20px; bottom: -20px;
+    border-radius: 24px; border: 2px dashed rgba(0,185,107,0.20);
+    pointer-events: none; z-index: 0;
+    animation: ringRotate 20s linear infinite;
+  }
+  @keyframes ringRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+  /* Responsive */
+  /* Hero responsive handled in main @media block below */
+
+  /* ─── STATS STRIP ─── */
+  .stats-strip {
+    background: #ffffff;
+    border-top: 3px solid #00b96b;
+    border-bottom: 1px solid rgba(0,185,107,0.12);
+    padding: 0 5vw;
+    position: relative;
+    z-index: 10;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  }
+  .stats-strip-inner {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .stats-strip-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 18px 20px;
+    position: relative;
+    transition: background 0.25s;
+  }
+  .stats-strip-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 20%; bottom: 20%;
+    width: 1px;
+    background: rgba(0,185,107,0.20);
+  }
+  .stats-strip-item:hover { background: rgba(0,185,107,0.04); }
+  .stats-strip-num {
+    font-family: 'Oswald', sans-serif;
+    font-size: 36px;
+    color: #00b96b;
+    line-height: 1;
+    letter-spacing: 1px;
+  }
+  .stats-strip-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: #6b7fa0;
+    margin-top: 5px;
+    text-align: center;
+  }
+  /* Stats strip responsive handled in main @media block below */
+
+  /* ─── TICKER ─── */
+  .ticker-wrap {
+    background: var(--green); padding: 14px 0; overflow: hidden;
+    position: relative;
+  }
+  .ticker-wrap::before, .ticker-wrap::after {
+    content: ''; position: absolute; top: 0; bottom: 0; width: 60px; z-index: 1;
+  }
+  .ticker-wrap::before { left: 0; background: linear-gradient(90deg, var(--green), transparent); }
+  .ticker-wrap::after { right: 0; background: linear-gradient(-90deg, var(--green), transparent); }
+  .ticker-inner { display: flex; width: max-content; animation: ticker 30s linear infinite; }
+  .ticker-inner:hover { animation-play-state: paused; }
+  .ticker-item {
+    font-family: 'Inter', sans-serif;
+    font-size: 17px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    color: #fff; padding: 0 36px; white-space: nowrap;
+  }
+  .ticker-dot { color: rgba(255,255,255,0.55); }
+  @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+  /* ─── SECTION BASE ─── */
+  section { padding: 96px 5vw; }
+  /* Section padding responsive handled in main @media block below */
+
+  .section-tag {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--green); margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+  }
+  .section-tag::before { content: ''; display: block; width: 30px; height: 2px; background: var(--green); border-radius: 2px; }
+  .section-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(24px, 3.2vw, 40px); line-height: 1.05; letter-spacing: 1px;
+    color: var(--text-dark);
+  }
+
+  /* ─── ABOUT ─── */
+  #about { background: var(--off-white); }
+  .about-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 64px; align-items: stretch; margin-top: 52px;
+  }
+  .about-grid > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .about-img-wrap {
+    position: relative; border-radius: 16px; overflow: hidden;
+    min-height: 520px; height: 100%; box-shadow: var(--shadow-lg);
+    flex: 1;
+  }
+  .about-img-wrap img { width: 100%; height: 100%; object-fit: contain; object-position: center center; background: #f0faf5; transition: transform 0.7s ease; position: absolute; inset: 0; }
+  .about-img-wrap:hover img { transform: scale(1.05); }
+  .about-img-badge {
+    position: absolute; bottom: 24px; left: 24px;
+    background: var(--green); color: #fff;
+    padding: 14px 22px; border-radius: 10px;
+    font-family: 'Oswald', sans-serif; font-size: 28px; letter-spacing: 1px;
+    box-shadow: 0 8px 24px rgba(0,201,122,0.35);
+  }
+  .about-img-badge span { display: block; font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 3px; color: rgba(255,255,255,0.80); }
+  .about-text-desc { font-size: 17px; color: var(--text-mid); line-height: 1.8; margin-bottom: 30px; }
+  .about-features { display: flex; flex-direction: column; gap: 16px; }
+  .about-feat {
+    display: flex; gap: 16px; align-items: flex-start;
+    background: var(--card-bg); border-radius: 10px;
+    padding: 20px 22px; border-left: 4px solid var(--green);
+    box-shadow: var(--shadow-sm); transition: all 0.3s;
+  }
+  .about-feat:hover { transform: translateX(6px); box-shadow: var(--shadow-md); }
+  .about-feat-icon { font-size: 26px; flex-shrink: 0; margin-top: 2px; }
+  .about-feat-title {
+    font-family: 'Inter', sans-serif; font-size: 17px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase; color: var(--text-dark); margin-bottom: 5px;
+  }
+  .about-feat-desc { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+
+  /* ─── SERVICES ─── */
+  #services { background: var(--white); }
+  .programs-strip {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 52px;
+  }
+  .program-card {
+    background: var(--off-white); border-radius: 10px; padding: 28px 22px;
+    border-top: 3px solid var(--green); transition: all 0.3s;
+    text-decoration: none; display: flex; flex-direction: column; cursor: pointer;
+    border: 1px solid var(--border); border-top: 3px solid var(--green);
+  }
+  .program-card:hover { background: var(--green); transform: translateY(-6px); box-shadow: var(--shadow-green); }
+  .program-card:hover .program-name,
+  .program-card:hover .program-desc { color: #fff; }
+  .program-icon { font-size: 30px; margin-bottom: 14px; }
+  .program-name { font-family: 'Inter', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dark); margin-bottom: 7px; transition: color 0.3s; }
+  .program-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; transition: color 0.3s; }
+
+  .services-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px; margin-top: 32px;
+  }
+  .service-card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 32px 26px;
+    position: relative; overflow: hidden; transition: all 0.35s; cursor: pointer;
+    box-shadow: var(--shadow-sm);
+  }
+  .service-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--green), #00f598);
+    transform: scaleX(0); transform-origin: left; transition: transform 0.35s;
+  }
+  .service-card:hover::before { transform: scaleX(1); }
+  .service-card:hover { border-color: rgba(0,201,122,0.25); transform: translateY(-8px); box-shadow: var(--shadow-lg); }
+  .service-price { font-family: 'Oswald', sans-serif; font-size: 50px; color: var(--green); line-height: 1; }
+  .service-price span { font-size: 22px; color: var(--text-muted); }
+  .service-name { font-family: 'Inter', sans-serif; font-size: 20px; font-weight: 700; color: var(--text-dark); text-transform: uppercase; letter-spacing: 1px; margin: 10px 0 8px; }
+  .service-desc { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+  .service-icon { font-size: 32px; margin-bottom: 14px; }
+  .service-book {
+    display: inline-block; margin-top: 20px;
+    background: var(--green); color: #fff;
+    padding: 10px 24px; border-radius: 5px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    text-decoration: none; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,201,122,0.25);
+  }
+  .service-book:hover { background: var(--green-dark); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,201,122,0.35); }
+
+  /* ─── COACHES ─── */
+  #coaches { background: var(--off-white); }
+  .coaches-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 28px; margin-top: 52px;
+  }
+  .coach-card {
+    background: var(--card-bg); border-radius: 16px; overflow: hidden;
+    transition: all 0.35s; border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+  }
+  .coach-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); }
+  .coach-img-wrap {
+    height: 420px; position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #e8f5ee, #d0e8f7);
+  }
+  .coach-img-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: top center; transition: transform 0.5s; display: block; }
+  .coach-card:hover .coach-img-wrap img { transform: scale(1.06); }
+  .coach-placeholder { font-size: 90px; opacity: 0.2; }
+  .coach-badge {
+    position: absolute; top: 14px; left: 14px; background: var(--green);
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    color: #fff; padding: 5px 12px; border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0,201,122,0.35);
+  }
+  .coach-info { padding: 28px; }
+  .coach-name { font-family: 'Oswald', sans-serif; font-size: 32px; letter-spacing: 1px; color: var(--text-dark); }
+  .coach-role { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; color: var(--green); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+  .coach-bio { font-size: 14px; color: var(--text-muted); line-height: 1.7; margin-bottom: 18px; }
+  .coach-achievements { display: flex; flex-direction: column; gap: 8px; }
+  .achieve-item { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-mid); font-weight: 600; }
+  .achieve-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+
+  /* ─── MEMBERSHIP ─── */
+  #membership { background: var(--white); }
+  .membership-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 24px; margin-top: 52px; align-items: start;
+  }
+  .membership-card {
+    background: var(--card-bg); border: 2px solid var(--border);
+    border-radius: 16px; padding: 38px 30px; transition: all 0.3s;
+    box-shadow: var(--shadow-sm);
+  }
+  .membership-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); }
+  .membership-card.featured {
+    border-color: var(--green); border-width: 2px;
+    background: linear-gradient(160deg, #f0faf5 0%, #e6f5ff 100%);
+    position: relative;
+    box-shadow: 0 8px 40px rgba(0,201,122,0.15);
+  }
+  .membership-card.featured::before {
+    content: 'MOST POPULAR'; position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+    background: var(--green); color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 900; letter-spacing: 2px;
+    padding: 5px 16px; border-radius: 20px; white-space: nowrap;
+    box-shadow: 0 4px 14px rgba(0,201,122,0.35);
+  }
+  .membership-name { font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 14px; }
+  .membership-price-wrap { display: flex; align-items: baseline; gap: 4px; margin-bottom: 24px; }
+  .membership-currency { font-size: 26px; font-weight: 700; color: var(--green); }
+  .membership-amount { font-family: 'Oswald', sans-serif; font-size: 62px; color: var(--text-dark); line-height: 1; }
+  .membership-period { font-size: 13px; color: var(--text-muted); margin-left: 4px; }
+  .membership-perks { list-style: none; margin-bottom: 28px; }
+  .membership-perks li { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--text-mid); padding: 9px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+  .membership-perks li:last-child { border-bottom: none; }
+  .perk-check { color: var(--green); font-weight: 900; font-size: 15px; flex-shrink: 0; }
+  .perk-cross { color: #ccc; font-weight: 900; font-size: 15px; flex-shrink: 0; }
+
+  /* ─── TESTIMONIALS ─── */
+  #testimonials { background: var(--light-bg); }
+  .testi-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 24px; margin-top: 52px;
+  }
+  .testi-card {
+    background: var(--card-bg); border-radius: 16px; padding: 34px 30px;
+    border: 1px solid var(--border); position: relative; transition: all 0.3s;
+    box-shadow: var(--shadow-sm); overflow: hidden;
+  }
+  .testi-card::before {
+    content: '"'; position: absolute; top: -10px; left: 20px;
+    font-family: 'Oswald', sans-serif; font-size: 130px;
+    color: rgba(0,201,122,0.07); line-height: 1; pointer-events: none;
+  }
+  .testi-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); border-color: rgba(0,201,122,0.2); }
+  .testi-stars { color: #f5a623; font-size: 16px; margin-bottom: 14px; letter-spacing: 3px; }
+  .testi-text { font-size: 15px; color: var(--text-mid); line-height: 1.8; margin-bottom: 24px; font-style: italic; }
+  .testi-author { display: flex; align-items: center; gap: 14px; }
+  .testi-avatar { width: 46px; height: 46px; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center; font-family: 'Oswald', sans-serif; font-size: 20px; color: #fff; flex-shrink: 0; }
+  .testi-name { font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dark); }
+  .testi-role { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  /* ─── CHAMPIONS ─── */
+  #champions { background: var(--white); }
+  .champions-intro {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 56px;
+    align-items: center; margin-top: 48px;
+  }
+  .champions-text p { font-size: 16px; color: var(--text-mid); line-height: 1.8; margin-bottom: 22px; }
+  .trophies-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .trophy-card {
+    background: var(--off-white); border-radius: 12px;
+    border: 1px solid var(--border); padding: 24px 18px; text-align: center;
+    transition: all 0.3s; box-shadow: var(--shadow-sm);
+  }
+  .trophy-card:hover { border-color: rgba(0,201,122,0.35); transform: translateY(-4px); box-shadow: var(--shadow-md); background: #f0faf5; }
+  .trophy-icon { font-size: 32px; margin-bottom: 10px; }
+  .trophy-title { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 700; color: var(--text-dark); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .trophy-sub { font-size: 12px; color: var(--text-muted); }
+
+  /* ─── SAFETY ─── */
+  #safety { background: var(--green); padding: 80px 5vw; }
+  .safety-inner { display: flex; gap: 64px; align-items: center; }
+  .safety-text h2 { font-family: 'Oswald', sans-serif; font-size: clamp(28px,3.5vw,42px); letter-spacing: 2px; color: #fff; margin-bottom: 12px; }
+  .safety-text p { font-size: 17px; color: rgba(255,255,255,0.90); max-width: 480px; line-height: 1.75; }
+  .safety-badges { display: flex; gap: 16px; flex-wrap: wrap; }
+  .safety-badge {
+    background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.30);
+    border-radius: 10px; padding: 20px 22px; text-align: center; min-width: 130px;
+    transition: all 0.3s; backdrop-filter: blur(4px);
+  }
+  .safety-badge:hover { background: rgba(255,255,255,0.25); transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+  .safety-badge-icon { font-size: 28px; margin-bottom: 10px; }
+  .safety-badge-text { font-size: 12px; font-weight: 700; color: #fff; letter-spacing: 1.5px; text-transform: uppercase; }
+
+  /* ─── GALLERY ─── */
+  #gallery { background: var(--off-white); }
+  .gallery-intro { font-size: 16px; color: var(--text-muted); max-width: 540px; margin-top: 14px; line-height: 1.7; }
+  .gallery-grid {
+    display: grid; grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: 220px 220px 220px;
+    gap: 10px; margin-top: 36px; border-radius: 16px; overflow: hidden;
+    box-shadow: var(--shadow-md);
+  }
+  .gallery-item { position: relative; overflow: hidden; cursor: pointer; }
+  .gallery-item:nth-child(1) { grid-column: 1/6; grid-row: 1/3; }
+  .gallery-item:nth-child(2) { grid-column: 6/9; grid-row: 1; }
+  .gallery-item:nth-child(3) { grid-column: 9/13; grid-row: 1; }
+  .gallery-item:nth-child(4) { grid-column: 6/10; grid-row: 2; }
+  .gallery-item:nth-child(5) { grid-column: 10/13; grid-row: 2; }
+  .gallery-item:nth-child(6) { grid-column: 1/5; grid-row: 3; }
+  .gallery-item:nth-child(7) { grid-column: 5/9; grid-row: 3; }
+  .gallery-item:nth-child(8) { grid-column: 9/13; grid-row: 3; }
+  .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.55s ease; display: block; }
+  .gallery-item:hover img { transform: scale(1.08); }
+  .gallery-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 55%);
+    opacity: 0; transition: opacity 0.3s;
+    display: flex; align-items: flex-end; padding: 16px;
+  }
+  .gallery-item:hover .gallery-overlay { opacity: 1; }
+  .gallery-caption { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 700; color: #fff; letter-spacing: 1.5px; text-transform: uppercase; }
+  .gallery-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 44px; }
+  .gp-1 { background: linear-gradient(135deg, #c8e6d4, #a8d5c2); }
+  .gp-2 { background: linear-gradient(135deg, #d4c8e6, #c2a8d5); }
+  .gp-3 { background: linear-gradient(135deg, #c8d4e6, #a8c2d5); }
+  .gp-4 { background: linear-gradient(135deg, #e6d4c8, #d5c2a8); }
+  .gp-5 { background: linear-gradient(135deg, #c8e6e6, #a8d5d5); }
+  .gp-6 { background: linear-gradient(135deg, #e6c8e6, #d5a8d5); }
+  .gp-7 { background: linear-gradient(135deg, #e6e6c8, #d5d5a8); }
+  .gp-8 { background: linear-gradient(135deg, #d4e6c8, #c2d5a8); }
+
+  /* ─── CONTACT ─── */
+  #contact { background: var(--white); }
+  .contact-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 56px; margin-top: 52px;
+    align-items: stretch;
+  }
+  /* Left column: flex column so it stretches full height */
+  .contact-left {
+    display: flex; flex-direction: column;
+    background: var(--off-white); border-radius: 16px;
+    padding: 38px; border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+  }
+  .contact-info-list { flex: 1; }
+  .contact-info-item { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 28px; }
+  .contact-icon {
+    width: 50px; height: 50px; border-radius: 10px;
+    background: var(--green-light); border: 1px solid rgba(0,201,122,0.20);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .contact-label { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 5px; }
+  .contact-value { font-size: 16px; font-weight: 600; color: var(--text-dark); line-height: 1.5; }
+  .contact-socials { display: flex; gap: 10px; margin-top: auto; padding-top: 24px; }
+  .social-btn {
+    width: 46px; height: 46px; border-radius: 8px;
+    background: var(--white); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; text-decoration: none; transition: all 0.2s; cursor: pointer;
+  }
+  .social-btn:hover { background: var(--green); border-color: var(--green); transform: translateY(-3px); box-shadow: 0 6px 18px rgba(0,201,122,0.30); }
+  /* Right column: form stretches full height */
+  .contact-form {
+    background: var(--off-white); border-radius: 16px; padding: 38px;
+    border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+    display: flex; flex-direction: column;
+  }
+  .contact-form form { flex: 1; display: flex; flex-direction: column; }
+  .form-submit { margin-top: auto !important; }
+  .contact-form-title { font-family: 'Oswald', sans-serif; font-size: 28px; letter-spacing: 1.5px; color: var(--text-dark); margin-bottom: 24px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .form-group.full { grid-column: 1/-1; }
+  .form-group label { display: block; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; background: var(--card-bg); border: 1.5px solid var(--border);
+    border-radius: 7px; padding: 12px 14px; color: var(--text-dark);
+    font-family: 'Inter', sans-serif; font-size: 15px; outline: none;
+    transition: all 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: var(--green); background: #f5fdf9; box-shadow: 0 0 0 3px var(--green-light);
+  }
+  .form-group select option { background: #fff; color: var(--text-dark); }
+  .form-group textarea { resize: none; height: 100px; }
+  .form-submit {
+    width: 100%; margin-top: 8px; background: var(--green); color: #fff;
+    border: none; border-radius: 7px; padding: 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 17px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 16px rgba(0,201,122,0.30);
+  }
+  .form-submit:hover { background: var(--green-dark); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,201,122,0.40); }
+
+  /* ─── FAQ ─── */
+  #faq { background: var(--light-bg); }
+  .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 48px; }
+  .faq-item {
+    background: var(--card-bg); border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 22px 24px; cursor: pointer; transition: all 0.25s;
+    box-shadow: var(--shadow-sm);
+  }
+  .faq-item:hover { border-color: rgba(0,201,122,0.35); box-shadow: var(--shadow-md); }
+  .faq-item.open { border-color: var(--green); box-shadow: 0 4px 20px rgba(0,201,122,0.15); }
+  .faq-q { display: flex; justify-content: space-between; align-items: center; gap: 14px; font-family: 'Inter', sans-serif; font-size: 17px; font-weight: 700; color: var(--text-dark); }
+  .faq-arrow { font-size: 16px; transition: transform 0.3s; flex-shrink: 0; color: var(--green); }
+  .faq-item.open .faq-arrow { transform: rotate(180deg); }
+  .faq-a { font-size: 14px; color: var(--text-muted); line-height: 1.75; margin-top: 14px; display: none; }
+  .faq-item.open .faq-a { display: block; animation: fadeUp 0.3s ease; }
+
+  /* ─── FOOTER ─── */
+  footer { background: #0d0618; padding: 64px 5vw 28px; border-top: 3px solid var(--green); }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 44px; margin-bottom: 48px; }
+  .footer-logo-img {
+    display: block;
+    height: 80px;
+    width: auto;
+    margin-bottom: 18px;
+    object-fit: contain;
+    background: transparent;
+    background-color: transparent;
+    opacity: 1;
+    transition: opacity 0.2s;
+  }
+  .footer-logo-img:hover { opacity: 0.85; }
+  .footer-logo-text { display: none; }
+  .footer-logo-text span { display: none; }
+  .footer-tagline { font-size: 13px; color: rgba(255,255,255,0.85); line-height: 1.75; max-width: 270px; }
+  .footer-col-title { font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--green); margin-bottom: 18px; }
+  .footer-links { list-style: none; }
+  .footer-links li { margin-bottom: 9px; }
+  .footer-links a { font-size: 13px; color: rgba(255,255,255,0.85); text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--green); }
+  .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 28px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 12px; color: rgba(255,255,255,0.75); flex-wrap: wrap; gap: 10px; }
+  .footer-legal { display: flex; gap: 20px; }
+  .footer-legal a { font-size: 12px; color: rgba(255,255,255,0.75); text-decoration: none; transition: color 0.2s; }
+  .footer-legal a:hover { color: var(--green); }
+
+  /* ─── LEGAL OVERLAY ─── */
+  .legal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 2000;
+    background: rgba(11,23,40,0.97); overflow-y: auto;
+  }
+  .legal-overlay.active { display: block; animation: overlayIn 0.3s ease; }
+  @keyframes overlayIn { from { opacity:0; } to { opacity:1; } }
+  .legal-inner { max-width: 760px; margin: 0 auto; padding: 60px 24px 80px; }
+  .legal-close {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.5);
+    cursor: pointer; margin-bottom: 40px; background: none; border: none; transition: color 0.2s; padding: 0;
+  }
+  .legal-close:hover { color: #fff; }
+  .legal-title { font-family: 'Oswald', sans-serif; font-size: clamp(40px, 6vw, 72px); letter-spacing: 2px; color: #fff; margin-bottom: 32px; line-height: 1.05; }
+  .legal-section { margin-bottom: 32px; }
+  .legal-section h3 { font-family: 'Inter', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--green); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .legal-section p { font-size: 15px; color: rgba(255,255,255,0.70); line-height: 1.8; margin-bottom: 12px; }
+  .legal-section ul { padding-left: 20px; }
+  .legal-section ul li { font-size: 15px; color: rgba(255,255,255,0.70); line-height: 1.8; margin-bottom: 6px; }
+  .legal-divider { height: 2px; background: var(--green); margin: 8px 0 40px; }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp { from { opacity:0; transform: translateY(28px); } to { opacity:1; transform: translateY(0); } }
+
+  /* ── SCROLL ANIMATIONS ── */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.75s cubic-bezier(0.22,1,0.36,1), transform 0.75s cubic-bezier(0.22,1,0.36,1);
+  }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  .fade-in-left {
+    opacity: 0;
+    transform: translateX(-50px);
+    transition: opacity 0.8s cubic-bezier(0.22,1,0.36,1), transform 0.8s cubic-bezier(0.22,1,0.36,1);
+  }
+  .fade-in-left.visible { opacity: 1; transform: translateX(0); }
+
+  .fade-in-right {
+    opacity: 0;
+    transform: translateX(50px);
+    transition: opacity 0.8s cubic-bezier(0.22,1,0.36,1), transform 0.8s cubic-bezier(0.22,1,0.36,1);
+  }
+  .fade-in-right.visible { opacity: 1; transform: translateX(0); }
+
+  .fade-in-scale {
+    opacity: 0;
+    transform: scale(0.88) translateY(20px);
+    transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1);
+  }
+  .fade-in-scale.visible { opacity: 1; transform: scale(1) translateY(0); }
+
+  .fade-in-up-slow {
+    opacity: 0;
+    transform: translateY(60px);
+    transition: opacity 1s cubic-bezier(0.22,1,0.36,1), transform 1s cubic-bezier(0.22,1,0.36,1);
+  }
+  .fade-in-up-slow.visible { opacity: 1; transform: translateY(0); }
+
+  /* Stats strip slide in */
+  .stats-strip-item {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s cubic-bezier(0.22,1,0.36,1), transform 0.6s cubic-bezier(0.22,1,0.36,1), background 0.25s;
+  }
+  .stats-strip-item.visible { opacity: 1; transform: translateY(0); }
+
+  /* ─── COUNTER ─── */
+  .counter { display: inline-block; }
+
+  /* ─── FLOATING WHATSAPP ─── */
+  .whatsapp-float {
+    position: fixed; bottom: 24px; right: 24px; z-index: 900;
+    width: 58px; height: 58px; border-radius: 50%;
+    background: #25D366; color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; text-decoration: none;
+    box-shadow: 0 4px 24px rgba(37,211,102,0.45);
+    transition: all 0.3s; animation: bounceIn 1s 2s ease both;
+  }
+  .whatsapp-float:hover { transform: scale(1.13) rotate(-5deg); box-shadow: 0 8px 36px rgba(37,211,102,0.6); }
+  @keyframes bounceIn { from { opacity:0; transform:scale(0.5); } 70% { transform:scale(1.1); } to { opacity:1; transform:scale(1); } }
+
+  /* ─── BOOKING MODAL ─── */
+  .booking-modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 2000;
+    background: rgba(0,0,0,0.65); backdrop-filter: blur(6px);
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .booking-modal-overlay.open { display: flex; }
+  .booking-modal {
+    background: #fff; border: 1.5px solid rgba(0,201,122,0.25);
+    border-radius: 16px; padding: 44px 38px; width: 100%; max-width: 530px;
+    position: relative; animation: modalIn 0.3s ease;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.25);
+  }
+  @keyframes modalIn { from { opacity:0; transform: scale(0.92) translateY(20px); } to { opacity:1; transform: none; } }
+  .booking-modal-close {
+    position: absolute; top: 16px; right: 20px; background: none; border: none;
+    color: var(--text-muted); font-size: 24px; cursor: pointer; line-height: 1; transition: color 0.2s;
+  }
+  .booking-modal-close:hover { color: var(--green); }
+  .booking-modal h3 { font-family: 'Oswald', sans-serif; font-size: 32px; letter-spacing: 2px; color: var(--text-dark); margin-bottom: 6px; }
+  .booking-modal p { font-size: 14px; color: var(--text-muted); margin-bottom: 28px; }
+  .booking-form-group { margin-bottom: 18px; }
+  .booking-form-group label {
+    display: block; font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--text-muted); margin-bottom: 7px;
+  }
+  .booking-form-group input, .booking-form-group select, .booking-form-group textarea {
+    width: 100%; background: var(--off-white); border: 1.5px solid var(--border);
+    border-radius: 7px; padding: 12px 14px; color: var(--text-dark);
+    font-family: 'Inter', sans-serif; font-size: 15px; outline: none; transition: all 0.2s;
+  }
+  .booking-form-group input:focus, .booking-form-group select:focus, .booking-form-group textarea:focus {
+    border-color: var(--green); box-shadow: 0 0 0 3px var(--green-light);
+  }
+  .booking-form-group select option { background: #fff; color: var(--text-dark); }
+  .booking-form-group textarea { resize: vertical; min-height: 80px; }
+  .booking-submit {
+    width: 100%; background: var(--green); color: #fff; border: none;
+    border-radius: 7px; padding: 15px;
+    font-family: 'Inter', sans-serif;
+    font-size: 17px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 16px rgba(0,201,122,0.30);
+  }
+  .booking-submit:hover { background: var(--green-dark); transform: translateY(-2px); }
+  .booking-success { text-align: center; padding: 20px 0; display: none; }
+  .booking-success .success-icon { font-size: 60px; margin-bottom: 16px; }
+  .booking-success h4 { font-family: 'Oswald', sans-serif; font-size: 30px; letter-spacing: 2px; color: var(--green); margin-bottom: 10px; }
+  .booking-success p { color: var(--text-muted); font-size: 15px; line-height: 1.7; }
+
+  /* ─── RESPONSIVE ─── */
+
+  /* === TABLET (max 900px) === */
+  @media (max-width: 900px) {
+    nav { padding: 0 4vw; height: 70px; }
+    .nav-logo img { height: 56px; }
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .mobile-menu { top: 70px; }
+
+    .hero-inner {
+      grid-template-columns: 1fr;
+      padding: 40px 0 60px;
+      gap: 36px;
+      min-height: unset;
+    }
+    .hero-visual { order: -1; max-width: 360px; margin: 0 auto; width: 100%; }
+    .hero-img-main { min-height: 320px; aspect-ratio: 3/2; }
+    .hero-img-card2 { right: -10px; }
+    .hero-content { padding-top: 0; padding-bottom: 0; text-align: center; align-items: center; }
+    .hero-badge { margin-left: auto; margin-right: auto; }
+    .hero-divider { margin-left: auto; margin-right: auto; }
+    .hero-sub { text-align: center; max-width: 100%; }
+    .hero-btns { justify-content: center; }
+    .hero-stats { justify-content: center; }
+
+    .champions-intro { grid-template-columns: 1fr; gap: 30px; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .contact-left { border-radius: 16px; }
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 28px; }
+    .faq-grid { grid-template-columns: 1fr; }
+    .programs-strip { grid-template-columns: 1fr 1fr; }
+    .safety-inner { flex-direction: column; gap: 32px; }
+    .about-grid { grid-template-columns: 1fr; gap: 32px; }
+    .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: unset; }
+    .gallery-item { grid-column: unset !important; grid-row: unset !important; height: 180px; }
+    .coaches-grid { grid-template-columns: 1fr 1fr; }
+    .membership-grid { grid-template-columns: 1fr 1fr; }
+    .testi-grid { grid-template-columns: 1fr; }
+
+    section { padding: 64px 4vw; }
+    .contact-form { padding: 28px 22px; }
+  }
+
+  /* === MOBILE (max 600px) === */
+  @media (max-width: 600px) {
+    nav { padding: 0 5vw; height: 64px; }
+    .nav-logo img { height: 48px; }
+    .mobile-menu { top: 64px; padding: 16px 5vw 22px; }
+    .mobile-menu a { font-size: 18px; padding: 10px 0; }
+
+    section { padding: 56px 5vw; }
+
+    /* Hero */
+    #home { padding: 64px 5vw 0; }
+    .hero-inner { padding: 28px 0 48px; gap: 28px; }
+    .hero-visual { max-width: 280px; }
+    .hero-img-main { min-height: 240px; }
+    .hero-img-card2 { display: none; }
+    .hero-img-badge { padding: 10px 14px; bottom: 16px; left: 16px; }
+    .hero-img-badge-title { font-size: 16px; }
+    .hero-title { font-size: clamp(26px, 9vw, 40px) !important; line-height: 1.1; }
+    .hero-sub { font-size: 14px; }
+    .hero-btns { flex-direction: column; align-items: center; gap: 10px; }
+    .btn-primary, .btn-outline { width: 100%; text-align: center; padding: 14px 20px; font-size: 13px; }
+    .hero-stats { flex-wrap: wrap; gap: 16px 24px; justify-content: center; }
+    .hero-stat { padding-right: 16px; margin-right: 16px; }
+    .hero-stat-num { font-size: 28px; }
+    .hero-accent-circle, .hero-accent-circle2, .hero-orb-1, .hero-orb-2 { display: none; }
+
+    /* Stats strip */
+    .stats-strip-inner { grid-template-columns: repeat(2, 1fr); }
+    .stats-strip-item:nth-child(2)::after { display: none; }
+    .stats-strip-num { font-size: 34px; }
+    .stats-strip-label { font-size: 9px; letter-spacing: 1.5px; }
+
+    /* Ticker */
+    .ticker-item { font-size: 14px; padding: 0 24px; }
+
+    /* Section headings */
+    .section-title { font-size: clamp(22px, 7vw, 32px) !important; }
+    .section-tag { font-size: 10px; }
+
+    /* About */
+    .about-img-wrap { height: 260px; min-height: unset; }
+    .about-img-badge { font-size: 22px; padding: 10px 16px; }
+    .about-feat { padding: 16px 16px; }
+    .about-feat-icon { font-size: 22px; }
+    .about-feat-title { font-size: 15px; }
+
+    /* Services / Programs */
+    .programs-strip { grid-template-columns: 1fr 1fr !important; gap: 12px; }
+    .program-card { padding: 20px 16px; }
+    .program-name { font-size: 15px; }
+    .services-grid { grid-template-columns: 1fr !important; }
+    .service-price { font-size: 40px; }
+
+    /* Coaches */
+    .coaches-grid { grid-template-columns: 1fr !important; }
+    .coach-img-wrap { height: 300px; }
+    .coach-name { font-size: 26px; }
+    .coach-info { padding: 20px; }
+
+    /* Membership */
+    .membership-grid { grid-template-columns: 1fr !important; }
+    .membership-card { padding: 28px 22px; }
+    .membership-amount { font-size: 50px; }
+
+    /* Testimonials */
+    .testi-card { padding: 24px 20px; }
+
+    /* Champions */
+    .trophies-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .trophy-card { padding: 18px 12px; }
+    .trophy-icon { font-size: 26px; }
+    .trophy-title { font-size: 13px; }
+
+    /* Safety */
+    .safety-inner { gap: 24px; }
+    .safety-text h2 { font-size: 26px !important; }
+    .safety-text p { font-size: 15px; }
+    .safety-badges { gap: 10px; flex-wrap: wrap; justify-content: center; }
+    .safety-badge { min-width: 110px; padding: 16px 16px; flex: 1; }
+
+    /* Gallery */
+    .gallery-grid { grid-template-columns: 1fr 1fr; }
+    .gallery-item { height: 160px; }
+
+    /* Contact */
+    .contact-form { padding: 22px 16px; }
+    .form-row { grid-template-columns: 1fr; gap: 10px; }
+    .contact-info-item { gap: 12px; }
+    .contact-icon { width: 42px; height: 42px; font-size: 18px; }
+    .contact-value { font-size: 14px; }
+    .contact-socials { gap: 8px; margin-top: 24px; }
+
+    /* FAQ */
+    .faq-item { padding: 18px 18px; }
+    .faq-q { font-size: 15px; }
+
+    /* Footer */
+    .footer-grid { grid-template-columns: 1fr !important; gap: 28px; }
+    .footer-bottom { flex-direction: column; gap: 10px; text-align: center; }
+    .footer-legal { justify-content: center; flex-wrap: wrap; gap: 12px; }
+    footer { padding: 48px 5vw 24px; }
+
+    /* Booking Modal */
+    .booking-modal-overlay { padding: 12px; align-items: flex-end; }
+    .booking-modal { padding: 28px 20px 32px; border-radius: 16px 16px 0 0; max-height: 92vh; overflow-y: auto; }
+    .booking-modal h3 { font-size: 26px; }
+
+    /* WhatsApp float */
+    .whatsapp-float { bottom: 18px; right: 18px; width: 52px; height: 52px; }
+
+    /* Legal overlay */
+    .legal-inner { padding: 40px 18px 60px; }
+    .legal-title { font-size: clamp(30px, 10vw, 52px); }
+  }
+
+  /* === SMALL MOBILE (max 400px) === */
+  @media (max-width: 400px) {
+    nav { height: 60px; }
+    .nav-logo img { height: 44px; }
+    .mobile-menu { top: 60px; }
+    .hero-title { font-size: clamp(22px, 10vw, 34px) !important; }
+    .hero-visual { max-width: 240px; }
+    .stats-strip-num { font-size: 30px; }
+    .programs-strip { grid-template-columns: 1fr !important; }
+    .trophies-grid { grid-template-columns: 1fr !important; }
+    .gallery-grid { grid-template-columns: 1fr; }
+    .gallery-item { height: 200px; }
+    .safety-badge { min-width: 90px; }
+    .section-title { font-size: 22px !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SCROLL PROGRESS BAR -->
+<div id="progress-bar"></div>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a href="#home" class="nav-logo">
+    <img src="https://nejyjogwbbubeqkrgqat.supabase.co/storage/v1/object/public/claudedrop-images/uploads/1778325935065_hu9xscz.png" alt="Dulwich Table Tennis Club">
+  </a>
+  <ul class="nav-links">
+    <li><a href="#home">Home</a></li>
+    <li><a href="club-account.html">Club Account</a></li>
+    <li><a href="membership.html">Membership</a></li>
+    <li><a href="contact.html">Contact Us</a></li>
+    <li><a href="services.html">Services</a></li>
+    <li><a href="champions.html">Success Stories</a></li>
+    <li><a href="#booking" onclick="openBooking(event)" class="nav-cta">Book Now</a></li>
+  </ul>
+  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#home" onclick="toggleMenu()">Home</a>
+  <a href="club-account.html" onclick="toggleMenu()">Club Account</a>
+  <a href="membership.html" onclick="toggleMenu()">Membership</a>
+  <a href="contact.html" onclick="toggleMenu()">Contact Us</a>
+  <a href="services.html" onclick="toggleMenu()">Services</a>
+  <a href="champions.html" onclick="toggleMenu()">Success Stories</a>
+  <a href="#booking" onclick="openBooking(event)" class="mobile-cta">Book Now</a>
+</div>
+
+<!-- HERO -->
+<section id="home">
+  <div class="hero-bg-img"></div>
+  <div class="hero-bg-overlay"></div>
+  <div class="hero-bg-pattern"></div>
+  <div class="hero-line-left"></div>
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-accent-circle"></div>
+  <div class="hero-accent-circle2"></div>
+
+  <div class="hero-inner">
+
+    <!-- LEFT: Text Content -->
+    <div class="hero-content">
+      <div class="hero-badge"><span class="hero-badge-dot"></span> South London's Premier Club &nbsp;·&nbsp; Est. 2008</div>
+      <h1 class="hero-title">
+        TRAIN LIKE<br>
+        A <span class="accent">CHAMPION.</span><br>
+        <span class="accent">PLAY WITH PASSION.</span>
+      </h1>
+      <div class="hero-divider"></div>
+      <p class="hero-sub">World-class table tennis coaching for all ages and levels — led by <strong>Former England No.1 Abdul Wuraola.</strong> From complete beginners to competitive players, your journey starts here.</p>
+      <div class="hero-btns">
+        <a href="#booking" onclick="openBooking(event)" class="btn-primary">🏓 Book a Session</a>
+        <a href="services.html" class="btn-outline">View Pricing</a>
+      </div>
+    </div>
+
+    <!-- RIGHT: Player Image -->
+    <div class="hero-visual">
+      <div class="hero-img-frame">
+        <div class="hero-img-ring"></div>
+        <div class="hero-img-main">
+          <img src="https://nejyjogwbbubeqkrgqat.supabase.co/storage/v1/object/public/claudedrop-images/uploads/1778477746107_pco5rby.png"
+               alt="Abdul Wuraola — Former England No.1">
+        </div>
+        <div class="hero-img-badge">
+          <div class="hero-img-badge-title">Abdul Wuraola</div>
+          <div class="hero-img-badge-sub">Former England No.1</div>
+        </div>
+        <div class="hero-img-card2">
+          <div class="hero-img-card2-num">🏆</div>
+          <div class="hero-img-card2-num" style="font-size:20px;">2×</div>
+          <div class="hero-img-card2-label">Six Nations<br>Champion</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- STATS STRIP -->
+<div class="stats-strip">
+  <div class="stats-strip-inner">
+    <div class="stats-strip-item">
+      <div class="stats-strip-num"><span class="counter" data-target="15">0</span>+</div>
+      <div class="stats-strip-label">Years Active</div>
+    </div>
+    <div class="stats-strip-item">
+      <div class="stats-strip-num"><span class="counter" data-target="6">0</span>+</div>
+      <div class="stats-strip-label">Age Welcome</div>
+    </div>
+    <div class="stats-strip-item">
+      <div class="stats-strip-num">2×</div>
+      <div class="stats-strip-label">Six Nations</div>
+    </div>
+    <div class="stats-strip-item">
+      <div class="stats-strip-num"><span class="counter" data-target="100">0</span>+</div>
+      <div class="stats-strip-label">Players Coached</div>
+    </div>
+  </div>
+</div>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    <span class="ticker-item">Professional Coaching <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">All Ages Welcome <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">Former England No.1 <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">DBS Checked Coaches <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">South London's Best Club <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">Harris Girls Academy SE22 <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">Est. 2008 <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">Multiple International Titles <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">Professional Coaching <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">All Ages Welcome <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">Former England No.1 <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">DBS Checked Coaches <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">South London's Best Club <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">Harris Girls Academy SE22 <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">Est. 2008 <span class="ticker-dot">✦</span></span>
+    <span class="ticker-item">Multiple International Titles <span class="ticker-dot">✦</span></span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-tag">Who We Are</div>
+  <h2 class="section-title fade-in">MORE THAN A CLUB — IT'S A COMMUNITY</h2>
+  <div class="about-grid">
+    <div class="fade-in-left" style="display:flex; flex-direction:column; gap:16px;">
+      <div class="about-img-wrap fade-in-left" style="min-height:320px; flex:1.4;">
+        <img src="https://nejyjogwbbubeqkrgqat.supabase.co/storage/v1/object/public/claudedrop-images/uploads/1778477752499_ac5lyrp.png" alt="Head Coach Abdul Wuraola" style="object-fit:contain; object-position:center; background:#f0faf5;">
+        <div class="about-img-badge">Est. 2008<span>South London</span></div>
+      </div>
+      <div class="about-img-wrap fade-in-left" style="min-height:180px; flex:0.6; border-radius:14px;">
+        <img src="https://nejyjogwbbubeqkrgqat.supabase.co/storage/v1/object/public/claudedrop-images/uploads/1778483720481_34qibsm.png" alt="Table Tennis Paddle and Ball" style="object-fit:cover; object-position:center;">
+      </div>
+    </div>
+    <div class="fade-in-right">
+      <p class="about-text-desc fade-in">
+        Dulwich Table Tennis Club is South London's premier table tennis club, based at Harris Girls Academy in SE22. Founded in 2008, we've grown to become one of the most respected clubs in the region, producing national champions and nurturing players from age 6 to 60+.
+      </p>
+      <div class="about-features">
+        <div class="about-feat fade-in">
+          <div class="about-feat-icon">🏆</div>
+          <div>
+            <div class="about-feat-title">Championship Heritage</div>
+            <div class="about-feat-desc">2× Six Nations Champions, multiple national titles, and countless regional victories. Our legacy speaks for itself.</div>
+          </div>
+        </div>
+        <div class="about-feat fade-in">
+          <div class="about-feat-icon">👨‍🏫</div>
+          <div>
+            <div class="about-feat-title">Elite Coaching Staff</div>
+            <div class="about-feat-desc">Led by Former England No.1 Abdul Wuraola — a true legend of British table tennis with international titles to his name.</div>
+          </div>
+        </div>
+        <div class="about-feat fade-in">
+          <div class="about-feat-icon">🌍</div>
+          <div>
+            <div class="about-feat-title">Inclusive Community</div>
+            <div class="about-feat-desc">Players from age 6+ of all backgrounds and ability levels. From absolute beginners to competitive athletes — all are welcome.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="section-tag">Coaching Packages</div>
+  <h2 class="section-title fade-in">PICK YOUR SESSION. START YOUR JOURNEY.</h2>
+  <div class="programs-strip fade-in">
+    <a href="#booking" onclick="openBooking(event)" class="program-card fade-in-scale">
+      <div class="program-icon">⚡</div>
+      <div class="program-name">Quick Start</div>
+      <div class="program-desc">15-min focused coaching for 1 participant. Perfect for beginners trying the club.</div>
+    </a>
+    <a href="#booking" onclick="openBooking(event)" class="program-card fade-in-scale">
+      <div class="program-icon">🏓</div>
+      <div class="program-name">1-on-1 Coaching</div>
+      <div class="program-desc">Personalised 1-hour one-on-one sessions with our head coach.</div>
+    </a>
+    <a href="#booking" onclick="openBooking(event)" class="program-card fade-in-scale">
+      <div class="program-icon">👥</div>
+      <div class="program-name">Share Coaching</div>
+      <div class="program-desc">Shared coaching for 2 participants — great value team training.</div>
+    </a>
+    <a href="#booking" onclick="openBooking(event)" class="program-card fade-in-scale">
+      <div class="program-icon">🏆</div>
+      <div class="program-name">30 Min Session</div>
+      <div class="program-desc">Focused 30-minute coaching session for 1 participant.</div>
+    </a>
+  </div>
+  <div class="services-grid" style="margin-top:32px;">
+    <div class="service-card fade-in">
+      <div class="service-icon">⚡</div>
+      <div class="service-price">£15 <span>/ 15 min</span></div>
+      <div class="service-name">Quick Start</div>
+      <div class="service-desc">15-minute focused coaching for 1 participant. Perfect for a quick skills boost or trying out the club.</div>
+      <a href="#booking" onclick="openBooking(event)" class="service-book">Book Now</a>
+    </div>
+    <div class="service-card fade-in">
+      <div class="service-icon">🎯</div>
+      <div class="service-price">£50 <span>/ 1 hr</span></div>
+      <div class="service-name">One-on-One Coaching</div>
+      <div class="service-desc">Club coaching: One-on-One coaching £50 for 1hr. Focused technique, footwork, and match play strategy.</div>
+      <a href="#booking" onclick="openBooking(event)" class="service-book">Book Now</a>
+    </div>
+    <div class="service-card fade-in">
+      <div class="service-icon">👥</div>
+      <div class="service-price">£50 <span>/ 1 hr</span></div>
+      <div class="service-name">Share Coaching (2 Players)</div>
+      <div class="service-desc">Club coaching: £50 shared coaching for 2 participants 1 hour. Building a supportive and inclusive community for all.</div>
+      <a href="#booking" onclick="openBooking(event)" class="service-book">Book Now</a>
+    </div>
+    <div class="service-card fade-in">
+      <div class="service-icon">🏆</div>
+      <div class="service-price">£30 <span>/ 30 min</span></div>
+      <div class="service-name">30 Min Session</div>
+      <div class="service-desc">Club coaching: £30 for 1 participant 30 min. Helping every member improve their skills and achieve their goals.</div>
+      <a href="#booking" onclick="openBooking(event)" class="service-book">Book Now</a>
+    </div>
+  </div>
+</section>
+
+<!-- GOAL TAGLINE -->
+<div style="background: var(--off-white); padding: 28px 5vw; text-align:center; border-top: 1px solid var(--border);">
+  <p style="font-size:16px; color:var(--text-mid); max-width:780px; margin:0 auto; line-height:1.7;">Our goal is to create a safe, structured and enjoyable environment where everyone can develop skills, confidence and a love for the sport.</p>
+</div>
+<section id="coaches">
+  <div class="section-tag">Meet The Team</div>
+  <h2 class="section-title fade-in">COACHED BY THE BEST. BUILT FOR YOU.</h2>
+  <div class="coaches-grid">
+    <div class="coach-card fade-in">
+      <div class="coach-img-wrap">
+        <img src="https://nejyjogwbbubeqkrgqat.supabase.co/storage/v1/object/public/claudedrop-images/uploads/1778477746107_pco5rby.png" alt="Abdul Wuraola" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" style="object-fit:cover; object-position:center top;">
+        <div class="coach-placeholder" style="display:none">🏓</div>
+        <div class="coach-badge">Head Coach</div>
+      </div>
+      <div class="coach-info">
+        <div class="coach-role">Head Coach &amp; Founder</div>
+        <div class="coach-name">Abdul Wuraola</div>
+        <div class="coach-bio">Former England No.1 and multiple international title holder, Abdul brings world-class expertise to every session at DTTC. His passion for developing players of all ages is unmatched.</div>
+        <div class="coach-achievements">
+          <div class="achieve-item"><div class="achieve-dot"></div>National Champion</div>
+          <div class="achieve-item"><div class="achieve-dot"></div>2× Six Nations Champion</div>
+          <div class="achieve-item"><div class="achieve-dot"></div>Multiple International Titles</div>
+          <div class="achieve-item"><div class="achieve-dot"></div>Former England No.1</div>
+        </div>
+      </div>
+    </div>
+    <div class="coach-card fade-in">
+      <div class="coach-img-wrap">
+        <img src="https://usercontent.one/wp/dulwichttc.com/wp-content/uploads/2026/02/adeoyecoach.jpg?media=1769889411" alt="Adeoye Adewale" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+        <div class="coach-placeholder" style="display:none">🏓</div>
+        <div class="coach-badge">Club Coach</div>
+      </div>
+      <div class="coach-info">
+        <div class="coach-role">Community Coach</div>
+        <div class="coach-name">Adeoye Adewale</div>
+        <div class="coach-bio">Adeoye's extensive experience and dedication helps players of all levels develop their skills in a fun, supportive environment at DTTC.</div>
+        <div class="coach-achievements">
+          <div class="achieve-item"><div class="achieve-dot"></div>Club Level Coach</div>
+          <div class="achieve-item"><div class="achieve-dot"></div>Community Leader</div>
+          <div class="achieve-item"><div class="achieve-dot"></div>Youth Development Specialist</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MEMBERSHIP -->
+<section id="membership">
+  <div class="section-tag">Join The Club</div>
+  <h2 class="section-title fade-in">FIND YOUR PERFECT MEMBERSHIP</h2>
+  <div class="membership-grid">
+    <div class="membership-card fade-in">
+      <div class="membership-name">Starter</div>
+      <div class="membership-price-wrap">
+        <div class="membership-currency">£</div>
+        <div class="membership-amount">25</div>
+        <div class="membership-period">/ month</div>
+      </div>
+      <ul class="membership-perks">
+        <li><span class="perk-check">✓</span> Club access 1×/week</li>
+        <li><span class="perk-check">✓</span> Group sessions</li>
+        <li><span class="perk-check">✓</span> Equipment provided</li>
+        <li><span class="perk-cross">✗</span> One-on-one coaching</li>
+        <li><span class="perk-cross">✗</span> Tournament entry</li>
+        <li><span class="perk-cross">✗</span> Priority booking</li>
+      </ul>
+      <a href="contact.html" class="btn-outline" style="display:block; text-align:center; font-size:15px; padding:13px;">Get Started</a>
+    </div>
+    <div class="membership-card featured fade-in">
+      <div class="membership-name">Club Member</div>
+      <div class="membership-price-wrap">
+        <div class="membership-currency">£</div>
+        <div class="membership-amount">45</div>
+        <div class="membership-period">/ month</div>
+      </div>
+      <ul class="membership-perks">
+        <li><span class="perk-check">✓</span> Unlimited club access</li>
+        <li><span class="perk-check">✓</span> Group + coached sessions</li>
+        <li><span class="perk-check">✓</span> Equipment provided</li>
+        <li><span class="perk-check">✓</span> Monthly tournaments</li>
+        <li><span class="perk-check">✓</span> Junior league included</li>
+        <li><span class="perk-cross">✗</span> Private coaching sessions</li>
+      </ul>
+      <a href="#booking" onclick="openBooking(event)" class="btn-primary" style="display:block; text-align:center; font-size:15px; padding:13px;">Join Now</a>
+    </div>
+    <div class="membership-card fade-in">
+      <div class="membership-name">Elite</div>
+      <div class="membership-price-wrap">
+        <div class="membership-currency">£</div>
+        <div class="membership-amount">80</div>
+        <div class="membership-period">/ month</div>
+      </div>
+      <ul class="membership-perks">
+        <li><span class="perk-check">✓</span> Unlimited club access</li>
+        <li><span class="perk-check">✓</span> Private coaching sessions</li>
+        <li><span class="perk-check">✓</span> Equipment provided</li>
+        <li><span class="perk-check">✓</span> All tournaments included</li>
+        <li><span class="perk-check">✓</span> Priority booking</li>
+        <li><span class="perk-check">✓</span> Performance analysis</li>
+      </ul>
+      <a href="#booking" onclick="openBooking(event)" class="btn-outline" style="display:block; text-align:center; font-size:15px; padding:13px;">Go Elite</a>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <div class="section-tag">What They Say</div>
+  <h2 class="section-title fade-in">REAL PLAYERS. REAL RESULTS. REAL STORIES.</h2>
+  <div class="testi-grid">
+    <div class="testi-card fade-in">
+      <div class="testi-stars">★★★★★</div>
+      <div class="testi-text">"My son started at age 7 with no experience. Within a year he was competing in junior tournaments. Abdul is a phenomenal coach — patient, skilled and genuinely passionate."</div>
+      <div class="testi-author">
+        <div class="testi-avatar">SM</div>
+        <div>
+          <div class="testi-name">Sarah Mitchell</div>
+          <div class="testi-role">Parent of Junior Player</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card fade-in">
+      <div class="testi-stars">★★★★★</div>
+      <div class="testi-text">"I've been playing table tennis for 15 years, but training under Abdul completely transformed my game. The level of coaching here is world-class — genuinely exceptional."</div>
+      <div class="testi-author">
+        <div class="testi-avatar">JO</div>
+        <div>
+          <div class="testi-name">James Okonkwo</div>
+          <div class="testi-role">Advanced Club Member</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card fade-in">
+      <div class="testi-stars">★★★★★</div>
+      <div class="testi-text">"The atmosphere at DTTC is unlike anything I've experienced. Welcoming, competitive, and so much fun. Joined as a complete beginner 2 years ago — now I play in local leagues!"</div>
+      <div class="testi-author">
+        <div class="testi-avatar">RP</div>
+        <div>
+          <div class="testi-name">Rachel Peters</div>
+          <div class="testi-role">Club Member Since 2023</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CHAMPIONS -->
+<section id="champions">
+  <div class="section-tag">Success Stories</div>
+  <h2 class="section-title fade-in">WHERE CHAMPIONS ARE MADE</h2>
+  <div class="champions-intro">
+    <div class="champions-text fade-in">
+      <p>At Dulwich TTC, we don't just teach the game — we build champions. Our players have gone on to represent their regions, compete in national leagues, and win prestigious titles across the UK and beyond.</p>
+      <p>From complete beginners to seasoned competitors, our coaching philosophy transforms raw potential into measurable achievement. Every player's journey is unique, and we celebrate every milestone.</p>
+      <a href="champions.html" class="btn-primary">View All Success Stories →</a>
+    </div>
+    <div class="trophies-grid fade-in">
+      <div class="trophy-card fade-in-scale">
+        <div class="trophy-icon">🥇</div>
+        <div class="trophy-title">National Champions</div>
+        <div class="trophy-sub">Multiple titles across age groups</div>
+      </div>
+      <div class="trophy-card fade-in-scale">
+        <div class="trophy-icon">🌍</div>
+        <div class="trophy-title">Six Nations</div>
+        <div class="trophy-sub">2× Six Nations Champions</div>
+      </div>
+      <div class="trophy-card fade-in-scale">
+        <div class="trophy-icon">🏅</div>
+        <div class="trophy-title">Intl Titles</div>
+        <div class="trophy-sub">Multiple international wins</div>
+      </div>
+      <div class="trophy-card fade-in-scale">
+        <div class="trophy-icon">🧑‍🏫</div>
+        <div class="trophy-title">England No.1</div>
+        <div class="trophy-sub">Head coach was England's best</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SAFETY -->
+<section id="safety">
+  <div class="safety-inner">
+    <div class="safety-text fade-in">
+      <h2>SAFETY FIRST</h2>
+      <p>Your wellbeing is our top priority. Every coach at DTTC is DBS checked, first-aid trained, and committed to the highest safeguarding standards — so you can focus entirely on the game.</p>
+    </div>
+    <div class="safety-badges fade-in">
+      <div class="safety-badge">
+        <div class="safety-badge-icon">✅</div>
+        <div class="safety-badge-text">DBS Checked</div>
+      </div>
+      <div class="safety-badge">
+        <div class="safety-badge-icon">🩺</div>
+        <div class="safety-badge-text">First Aid Trained</div>
+      </div>
+      <div class="safety-badge">
+        <div class="safety-badge-icon">🛡️</div>
+        <div class="safety-badge-text">Safeguarding Certified</div>
+      </div>
+      <div class="safety-badge">
+        <div class="safety-badge-icon">👨‍👩‍👧</div>
+        <div class="safety-badge-text">Child Safe Environment</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery">
+  <div class="section-tag">Club Life</div>
+  <h2 class="section-title fade-in">LIFE INSIDE DULWICH TTC</h2>
+  <p class="gallery-intro fade-in">A look inside Dulwich Table Tennis Club — training sessions, tournaments, celebrations, and the community that makes DTTC special.</p>
+  <div class="gallery-grid">
+    <div class="gallery-item fade-in">
+      <img src="https://usercontent.one/wp/dulwichttc.com/wp-content/uploads/2026/02/tt1-scaled.jpg?media=1769889411" alt="Table Tennis Action" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+      <div class="gallery-placeholder gp-1" style="display:none">🏓</div>
+      <div class="gallery-overlay"><div class="gallery-caption">Club Action</div></div>
+    </div>
+    <div class="gallery-item fade-in">
+      <img src="https://nejyjogwbbubeqkrgqat.supabase.co/storage/v1/object/public/claudedrop-images/uploads/1778477752499_ac5lyrp.png" alt="Club Tracksuit" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+      <div class="gallery-placeholder gp-2" style="display:none">👕</div>
+      <div class="gallery-overlay"><div class="gallery-caption">Club Kit</div></div>
+    </div>
+    <div class="gallery-item fade-in">
+      <img src="https://nejyjogwbbubeqkrgqat.supabase.co/storage/v1/object/public/claudedrop-images/uploads/1778483746213_z7sz5np.png" alt="Venue" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+      <div class="gallery-placeholder gp-3" style="display:none">🏟️</div>
+      <div class="gallery-overlay"><div class="gallery-caption">Our Venue</div></div>
+    </div>
+    <div class="gallery-item fade-in">
+      <img src="https://nejyjogwbbubeqkrgqat.supabase.co/storage/v1/object/public/claudedrop-images/uploads/1778477746107_pco5rby.png" alt="Head Coach" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+      <div class="gallery-placeholder gp-4" style="display:none">👨‍🏫</div>
+      <div class="gallery-overlay"><div class="gallery-caption">Head Coach</div></div>
+    </div>
+    <div class="gallery-item fade-in">
+      <img src="https://usercontent.one/wp/dulwichttc.com/wp-content/uploads/2026/02/adeoyecoach.jpg?media=1769889411" alt="Coach Adeoye" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+      <div class="gallery-placeholder gp-5" style="display:none">🏓</div>
+      <div class="gallery-overlay"><div class="gallery-caption">Coach Adeoye</div></div>
+    </div>
+    <div class="gallery-item fade-in">
+      <img src="https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?w=600&q=80" alt="Club Trophies" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+      <div class="gallery-placeholder gp-6" style="display:none">🏆</div>
+      <div class="gallery-overlay"><div class="gallery-caption">Club Trophies</div></div>
+    </div>
+    <div class="gallery-item fade-in">
+      <img src="https://images.unsplash.com/photo-1611251135345-18c56206b863?w=600&q=80" alt="Team Training" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+      <div class="gallery-placeholder gp-7" style="display:none">👥</div>
+      <div class="gallery-overlay"><div class="gallery-caption">Team Training</div></div>
+    </div>
+    <div class="gallery-item fade-in">
+      <img src="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600&q=80" alt="Club Events" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+      <div class="gallery-placeholder gp-8" style="display:none">🎉</div>
+      <div class="gallery-overlay"><div class="gallery-caption">Club Events</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-tag">Get In Touch</div>
+  <h2 class="section-title fade-in">LET'S GET YOU ON THE TABLE</h2>
+  <div class="contact-grid">
+    <div class="contact-left fade-in">
+      <div class="contact-info-list">
+      <div class="contact-info-item">
+        <div class="contact-icon">📍</div>
+        <div>
+          <div class="contact-label">Venue</div>
+          <div class="contact-value">Harris Girls Academy<br>SE22 0NR, South London</div>
+        </div>
+      </div>
+      <div class="contact-info-item">
+        <div class="contact-icon">⏰</div>
+        <div>
+          <div class="contact-label">Session Times</div>
+          <div class="contact-value">1:00 PM – 4:00 PM</div>
+        </div>
+      </div>
+      <div class="contact-info-item">
+        <div class="contact-icon">📱</div>
+        <div>
+          <div class="contact-label">WhatsApp / Call</div>
+          <div class="contact-value"><a href="https://api.whatsapp.com/send/?phone=447821763379" target="_blank" style="color:inherit; text-decoration:none;">+44 7821 763379</a></div>
+        </div>
+      </div>
+      <div class="contact-info-item">
+        <div class="contact-icon">✉️</div>
+        <div>
+          <div class="contact-label">Email</div>
+          <div class="contact-value"><a href="mailto:info@dulwichttc.com" style="color:inherit; text-decoration:none;">info@dulwichttc.com</a></div>
+        </div>
+      </div>
+      </div>
+      <div class="contact-socials">
+        <a href="https://www.instagram.com/dulwichtabletennis" target="_blank" class="social-btn" title="Instagram">📷</a>
+        <a href="https://www.facebook.com/dulwichtabletennisclub/" target="_blank" class="social-btn" title="Facebook">💬</a>
+        <a href="https://www.youtube.com/@dulwichttclondon" target="_blank" class="social-btn" title="YouTube">▶️</a>
+        <a href="https://api.whatsapp.com/send/?phone=447821763379" target="_blank" class="social-btn" title="WhatsApp">📲</a>
+      </div>
+    </div>
+    <div class="contact-form fade-in">
+      <div class="contact-form-title">SEND A MESSAGE</div>
+      <form onsubmit="return false;" style="flex:1; display:flex; flex-direction:column;">
+      <div class="form-row">
+        <div class="form-group"><label>First Name</label><input type="text" placeholder="John"></div>
+        <div class="form-group"><label>Last Name</label><input type="text" placeholder="Smith"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Email</label><input type="email" placeholder="john@email.com"></div>
+        <div class="form-group"><label>Phone</label><input type="tel" placeholder="+44..."></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group full"><label>I'm Interested In</label>
+          <select>
+            <option>One-on-One Coaching</option>
+            <option>Group Sessions</option>
+            <option>Membership</option>
+            <option>Junior Program</option>
+            <option>Tournament Info</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row" style="flex:1;">
+        <div class="form-group full" style="display:flex; flex-direction:column; flex:1;"><label>Message</label><textarea placeholder="Tell us about yourself or your child..." style="flex:1; resize:none; min-height:80px;"></textarea></div>
+      </div>
+      <button class="form-submit" onclick="handleFormSubmit(this)">Send Message 🏓</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="section-tag">Questions</div>
+  <h2 class="section-title fade-in">GOT QUESTIONS? WE'VE GOT ANSWERS.</h2>
+  <div class="faq-grid">
+    <div class="faq-item fade-in" onclick="toggleFaq(this)">
+      <div class="faq-q">Do I need prior experience to join? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">Not at all! Our club welcomes players of all levels, from complete beginners to advanced competitors. We offer coaching and practice sessions tailored to different skill levels so everyone can improve and enjoy the game.</div>
+    </div>
+    <div class="faq-item fade-in" onclick="toggleFaq(this)">
+      <div class="faq-q">What equipment do I need to bring? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">If you have your own paddle, feel free to bring it. However, we also provide paddles and balls for beginners, so you can start playing without any special equipment.</div>
+    </div>
+    <div class="faq-item fade-in" onclick="toggleFaq(this)">
+      <div class="faq-q">When and how often do you meet? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">We hold regular sessions at Harris Girls Academy SE22. Sessions run from 1pm to 4pm. Contact us on WhatsApp for the latest schedule and to book your place.</div>
+    </div>
+    <div class="faq-item fade-in" onclick="toggleFaq(this)">
+      <div class="faq-q">Is the club open to juniors and adults? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">Yes! We offer sessions for juniors (from age 6), adults, and seniors. Our goal is to create a fun, inclusive environment where players of all ages can learn and compete.</div>
+    </div>
+    <div class="faq-item fade-in" onclick="toggleFaq(this)">
+      <div class="faq-q">How do I book a coaching session? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">You can book directly via our online form at the "Book Now" button, message us on WhatsApp at +447821763379, or use the contact form on this page. We'll get back to you quickly!</div>
+    </div>
+    <div class="faq-item fade-in" onclick="toggleFaq(this)">
+      <div class="faq-q">Are there tournaments and competitions? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">Yes! We run monthly tournaments, a junior league, and a club championship. Members also get support and guidance for entering external competitions and national events.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <a href="#home">
+        <img class="footer-logo-img" src="https://nejyjogwbbubeqkrgqat.supabase.co/storage/v1/object/public/claudedrop-images/uploads/1778325943417_p5cosjc.png" alt="Dulwich Table Tennis Club" style="background:transparent;background-color:transparent;">
+      </a>
+      <div class="footer-logo-text">DULWICH <span>TABLE TENNIS</span> CLUB</div>
+      <p class="footer-tagline">South London's Premier Table Tennis Club. Est. 2008. Welcoming players aged 6+ from beginners to advanced competitors. Company No. 16745371</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Programs</div>
+      <ul class="footer-links">
+        <li><a href="services.html">Coaching</a></li>
+        <li><a href="membership.html">Memberships</a></li>
+        <li><a href="contact.html">Contact Us</a></li>
+        <li><a href="#faq">FAQ's</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Programs</div>
+      <ul class="footer-links">
+        <li><a href="champions.html">Monthly Tournament</a></li>
+        <li><a href="champions.html">Junior League</a></li>
+        <li><a href="champions.html">Club Championship</a></li>
+        <li><a href="#coaches">Social Visits</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Have a Query?</div>
+      <ul class="footer-links">
+        <li style="font-size:20px; font-weight:700; color:#fff; letter-spacing:1px;">+447821763379</li>
+        <li style="color:rgba(255,255,255,0.5); font-size:12px; letter-spacing:1px; text-transform:uppercase; margin-top:8px;">Follow Us:</li>
+      </ul>
+      <div style="display:flex; gap:10px; margin-top:12px;">
+        <a href="https://www.instagram.com/dulwichtabletennis" target="_blank" style="width:40px;height:40px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;text-decoration:none;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a href="https://www.facebook.com/dulwichtabletennisclub/" target="_blank" style="width:40px;height:40px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;text-decoration:none;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+        <a href="https://www.youtube.com/@dulwichttclondon" target="_blank" style="width:40px;height:40px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;text-decoration:none;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#00C97A"/></svg>
+        </a>
+        <a href="https://www.linkedin.com/company/dulwich-ttc" target="_blank" style="width:40px;height:40px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;text-decoration:none;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Dulwich Table Tennis Club. All Rights Reserved. Company No. 16745371</span>
+    <div class="footer-legal">
+      <a href="#" onclick="openLegal('privacy'); return false;">Privacy Policy</a>
+      <a href="#" onclick="openLegal('terms'); return false;">Terms &amp; Conditions</a>
+      <a href="#" onclick="openLegal('safeguarding'); return false;">Safeguarding</a>
+    </div>
+  </div>
+</footer>
+
+<!-- LEGAL OVERLAYS -->
+<div class="legal-overlay" id="legal-privacy">
+  <div class="legal-inner">
+    <button class="legal-close" onclick="closeLegal('privacy')">← Back to Website</button>
+    <h1 class="legal-title">PRIVACY POLICY</h1>
+    <div class="legal-divider"></div>
+    <div class="legal-section">
+      <h3>Who We Are</h3>
+      <p>Dulwich Table Tennis Club ("DTTC", "we", "us", "our") is a sports club based at Harris Girls Academy, SE22 0NR, South London. Company Number: 16745371. We are committed to protecting and respecting your privacy.</p>
+    </div>
+    <div class="legal-section">
+      <h3>Information We Collect</h3>
+      <p>We may collect the following personal information when you contact us, book sessions, or join as a member:</p>
+      <ul>
+        <li>Full name, email address, and phone number</li>
+        <li>Date of birth (for junior members and competition registration)</li>
+        <li>Emergency contact details</li>
+        <li>Payment information (processed securely via third-party providers)</li>
+        <li>Photographs taken at club sessions or events (with consent)</li>
+      </ul>
+    </div>
+    <div class="legal-section">
+      <h3>How We Use Your Information</h3>
+      <ul>
+        <li>Process your membership and session bookings</li>
+        <li>Communicate important club news, schedule changes, and updates</li>
+        <li>Register you or your child for competitions and leagues</li>
+        <li>Ensure the safety and safeguarding of all members</li>
+        <li>Comply with legal obligations</li>
+      </ul>
+    </div>
+    <div class="legal-section">
+      <h3>Data Retention</h3>
+      <p>We retain your personal data for as long as you remain an active member or as required by law. You may request deletion of your data at any time by contacting us at info@dulwichttc.com.</p>
+    </div>
+    <div class="legal-section">
+      <h3>Your Rights</h3>
+      <p>Under UK GDPR, you have the right to access, correct, delete, and restrict the processing of your personal data. Contact us in writing at info@dulwichttc.com.</p>
+    </div>
+    <div class="legal-section">
+      <h3>Contact</h3>
+      <p>For any privacy-related queries, contact us at: info@dulwichttc.com or +44 7821 763379.</p>
+    </div>
+  </div>
+</div>
+
+<div class="legal-overlay" id="legal-terms">
+  <div class="legal-inner">
+    <button class="legal-close" onclick="closeLegal('terms')">← Back to Website</button>
+    <h1 class="legal-title">TERMS &amp; CONDITIONS</h1>
+    <div class="legal-divider"></div>
+    <div class="legal-section">
+      <h3>Acceptance of Terms</h3>
+      <p>By using our services, attending sessions, or becoming a member of Dulwich Table Tennis Club, you agree to be bound by these Terms and Conditions.</p>
+    </div>
+    <div class="legal-section">
+      <h3>Membership &amp; Payments</h3>
+      <ul>
+        <li>Membership fees are payable monthly or as agreed at time of joining</li>
+        <li>Session booking fees are non-refundable unless cancelled with 48 hours notice</li>
+        <li>DTTC reserves the right to amend pricing with 30 days notice to members</li>
+        <li>Membership is personal and non-transferable</li>
+      </ul>
+    </div>
+    <div class="legal-section">
+      <h3>Conduct &amp; Behaviour</h3>
+      <ul>
+        <li>Treat coaches, staff, and other players with respect at all times</li>
+        <li>Follow instructions given by coaches and club officials</li>
+        <li>Refrain from any abusive, discriminatory or aggressive behaviour</li>
+        <li>Take care of club equipment and facilities</li>
+      </ul>
+    </div>
+    <div class="legal-section">
+      <h3>Health &amp; Safety</h3>
+      <p>Members participate in club activities at their own risk. DTTC is not liable for injuries sustained during training or competition unless caused by negligence on our part.</p>
+    </div>
+    <div class="legal-section">
+      <h3>Governing Law</h3>
+      <p>These terms are governed by and construed in accordance with the laws of England and Wales.</p>
+    </div>
+  </div>
+</div>
+
+<div class="legal-overlay" id="legal-safeguarding">
+  <div class="legal-inner">
+    <button class="legal-close" onclick="closeLegal('safeguarding')">← Back to Website</button>
+    <h1 class="legal-title">SAFEGUARDING POLICY</h1>
+    <div class="legal-divider"></div>
+    <div class="legal-section">
+      <h3>Our Commitment</h3>
+      <p>Dulwich Table Tennis Club is fully committed to the safety and welfare of all children and young people in our care. The wellbeing of every player is our highest priority.</p>
+    </div>
+    <div class="legal-section">
+      <h3>DBS Checks</h3>
+      <p>All coaches and staff who work with children at DTTC hold a valid Enhanced DBS (Disclosure and Barring Service) check, renewed regularly in line with best practice guidelines.</p>
+    </div>
+    <div class="legal-section">
+      <h3>Code of Conduct for Coaches</h3>
+      <ul>
+        <li>Coaches never work alone with a child in a closed, private setting</li>
+        <li>Physical contact is limited to what is necessary for instruction</li>
+        <li>All coaches are trained in safeguarding awareness and first aid</li>
+        <li>Any concerns are reported immediately to the Club Welfare Officer</li>
+      </ul>
+    </div>
+    <div class="legal-section">
+      <h3>Reporting Concerns</h3>
+      <p>If you have any concerns about the welfare or safety of a child at DTTC, contact us at info@dulwichttc.com or call +44 7821 763379. For urgent concerns: NSPCC helpline 0808 800 5000.</p>
+    </div>
+    <div class="legal-section">
+      <h3>Review</h3>
+      <p>This safeguarding policy is reviewed annually. Last reviewed: January 2026.</p>
+    </div>
+  </div>
+</div>
+
+<!-- BOOKING MODAL -->
+<div class="booking-modal-overlay" id="bookingModal">
+  <div class="booking-modal">
+    <button class="booking-modal-close" onclick="closeBooking()">✕</button>
+    <div id="bookingFormWrap">
+      <h3>BOOK YOUR SESSION</h3>
+      <p>Fill in your details and we'll confirm your booking via WhatsApp or email.</p>
+      <div class="booking-form-group">
+        <label>Your Name</label>
+        <input type="text" id="bName" placeholder="Full name">
+      </div>
+      <div class="booking-form-group">
+        <label>Email Address</label>
+        <input type="email" id="bEmail" placeholder="your@email.com">
+      </div>
+      <div class="booking-form-group">
+        <label>Phone / WhatsApp</label>
+        <input type="tel" id="bPhone" placeholder="+44 ...">
+      </div>
+      <div class="booking-form-group">
+        <label>Session Type</label>
+        <select id="bSession">
+          <option value="">Select a session...</option>
+          <option>Quick Start — £15 / 15 min (1 participant)</option>
+          <option>One-on-One Coaching — £50 / 1 hr</option>
+          <option>Share Coaching — £50 / 1 hr (2 participants)</option>
+          <option>30 Min Session — £30 / 30 min</option>
+          <option>Junior Program</option>
+          <option>Tournament Prep</option>
+        </select>
+      </div>
+      <div class="booking-form-group">
+        <label>Preferred Date &amp; Time</label>
+        <input type="text" id="bDate" placeholder="e.g. Saturday 10am">
+      </div>
+      <div class="booking-form-group">
+        <label>Message (optional)</label>
+        <textarea id="bMsg" placeholder="Any questions or special requirements..."></textarea>
+      </div>
+      <button class="booking-submit" onclick="submitBooking()">Send Booking Request 🏓</button>
+    </div>
+    <div class="booking-success" id="bookingSuccess">
+      <div class="success-icon">🏓</div>
+      <h4>REQUEST SENT!</h4>
+      <p>Thanks! We'll confirm your session via WhatsApp or email within 24 hours.<br><br>
+      <a href="https://wa.me/447821763379" target="_blank" style="color:var(--green); text-decoration:none; font-weight:700;">Chat on WhatsApp</a> for faster confirmation.</p>
+    </div>
+  </div>
+</div>
+
+<!-- FLOATING WHATSAPP -->
+<a href="https://wa.me/447821763379" target="_blank" class="whatsapp-float" title="Chat on WhatsApp">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="30" height="30" fill="white">
+    <path d="M16 2C8.268 2 2 8.268 2 16c0 2.496.65 4.84 1.785 6.875L2 30l7.344-1.75A13.93 13.93 0 0016 30c7.732 0 14-6.268 14-14S23.732 2 16 2zm0 25.5a11.43 11.43 0 01-5.836-1.602l-.418-.247-4.357 1.04 1.078-4.243-.272-.437A11.457 11.457 0 014.5 16C4.5 9.597 9.597 4.5 16 4.5S27.5 9.597 27.5 16 22.403 27.5 16 27.5zm6.29-8.605c-.345-.172-2.04-1.006-2.356-1.12-.315-.117-.545-.172-.774.172-.23.344-.888 1.12-1.09 1.35-.2.23-.4.258-.745.086-.344-.172-1.452-.535-2.766-1.707-1.022-.912-1.712-2.037-1.913-2.382-.2-.344-.021-.53.15-.701.155-.154.345-.4.517-.6.172-.2.23-.344.345-.573.115-.23.057-.43-.029-.601-.086-.172-.774-1.866-1.06-2.555-.28-.672-.564-.58-.774-.59l-.66-.012c-.23 0-.6.086-.915.43-.315.344-1.203 1.176-1.203 2.868 0 1.693 1.232 3.328 1.404 3.558.172.23 2.426 3.703 5.878 5.193.822.355 1.463.567 1.963.725.824.263 1.574.226 2.167.137.66-.099 2.04-.833 2.328-1.637.287-.803.287-1.491.2-1.635-.086-.144-.315-.23-.66-.402z"/>
+  </svg>
+</a>
+
+<script>
+  // ─── SCROLL PROGRESS BAR ───
+  window.addEventListener('scroll', () => {
+    const scrollTop = document.documentElement.scrollTop;
+    const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    document.getElementById('progress-bar').style.width = (scrollTop / docHeight * 100) + '%';
+    // Nav shadow on scroll
+    document.getElementById('mainNav').classList.toggle('scrolled', scrollTop > 20);
+  });
+
+  // ─── MENU ───
+  function toggleMenu() {
+    const menu = document.getElementById('mobileMenu');
+    const hamburger = document.getElementById('hamburger');
+    menu.classList.toggle('open');
+    hamburger.classList.toggle('open');
+  }
+
+  // ─── FAQ ───
+  function toggleFaq(el) { el.classList.toggle('open'); }
+
+  // ─── LEGAL ───
+  function openLegal(type) {
+    document.getElementById('legal-' + type).classList.add('active');
+    document.body.style.overflow = 'hidden';
+    window.scrollTo(0, 0);
+  }
+  function closeLegal(type) {
+    document.getElementById('legal-' + type).classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      ['privacy','terms','safeguarding'].forEach(t => {
+        document.getElementById('legal-' + t).classList.remove('active');
+      });
+      document.body.style.overflow = '';
+      closeBooking();
+    }
+  });
+
+  // ─── FORM SUBMIT ───
+  function handleFormSubmit(btn) {
+    btn.textContent = '✓ Message Sent!';
+    btn.style.background = '#009a5c';
+    setTimeout(() => {
+      btn.textContent = 'Send Message 🏓';
+      btn.style.background = '';
+    }, 3000);
+  }
+
+  // ─── INTERSECTION OBSERVER (scroll animations) ───
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right, .fade-in-scale, .fade-in-up-slow, .stats-strip-item').forEach((el) => {
+    observer.observe(el);
+  });
+
+  // ─── STAGGER DELAY for grid children ───
+  document.querySelectorAll('.services-grid, .coaches-grid, .membership-grid, .testi-grid, .trophies-grid, .faq-grid, .programs-strip').forEach(grid => {
+    grid.querySelectorAll('.fade-in, .fade-in-scale, .fade-in-up-slow').forEach((child, i) => {
+      child.style.transitionDelay = (i * 0.12) + 's';
+    });
+  });
+
+  // ─── STAGGER for stats strip ───
+  document.querySelectorAll('.stats-strip-item').forEach((item, i) => {
+    item.style.transitionDelay = (i * 0.10) + 's';
+  });
+
+  // ─── STAGGER for about features ───
+  document.querySelectorAll('.about-feat').forEach((item, i) => {
+    item.style.transitionDelay = (i * 0.13) + 's';
+  });
+
+  // ─── STAGGER for section tags and titles ───
+  document.querySelectorAll('section').forEach(sec => {
+    const tag = sec.querySelector('.section-tag');
+    const title = sec.querySelector('.section-title');
+    if (tag && !tag.classList.contains('fade-in')) {
+      tag.classList.add('fade-in');
+      tag.style.transitionDelay = '0s';
+      observer.observe(tag);
+    }
+    if (title && !title.classList.contains('fade-in')) {
+      title.classList.add('fade-in');
+      title.style.transitionDelay = '0.1s';
+      observer.observe(title);
+    }
+  });
+
+  // ─── SMOOTH NAV SCROLL ───
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const href = a.getAttribute('href');
+      if (href === '#') return;
+      const target = document.querySelector(href);
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('mobileMenu').classList.remove('open');
+        document.getElementById('hamburger').classList.remove('open');
+      }
+    });
+  });
+
+  // ─── COUNTER ANIMATION ───
+  function animateCounters() {
+    document.querySelectorAll('.counter').forEach(counter => {
+      const target = parseInt(counter.dataset.target);
+      let current = 0;
+      const step = Math.ceil(target / 40);
+      const timer = setInterval(() => {
+        current += step;
+        if (current >= target) { current = target; clearInterval(timer); }
+        counter.textContent = current;
+      }, 40);
+    });
+  }
+  const heroObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { animateCounters(); heroObserver.disconnect(); }
+    });
+  }, { threshold: 0.4 });
+  heroObserver.observe(document.querySelector('#home'));
+
+  // ─── NAV ACTIVE STATE ───
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(sec => {
+      if (window.scrollY >= sec.offsetTop - 120) current = sec.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  });
+
+  // ─── BOOKING MODAL ───
+  function openBooking(e) {
+    e.preventDefault();
+    document.getElementById('bookingModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeBooking() {
+    document.getElementById('bookingModal').classList.remove('open');
+    document.body.style.overflow = '';
+    document.getElementById('bookingFormWrap').style.display = 'block';
+    document.getElementById('bookingSuccess').style.display = 'none';
+  }
+  document.getElementById('bookingModal').addEventListener('click', function(e) {
+    if (e.target === this) closeBooking();
+  });
+  function submitBooking() {
+    const name = document.getElementById('bName').value;
+    const email = document.getElementById('bEmail').value;
+    const session = document.getElementById('bSession').value;
+    if (!name || !email || !session) { alert('Please fill in your name, email and session type.'); return; }
+    document.getElementById('bookingFormWrap').style.display = 'none';
+    document.getElementById('bookingSuccess').style.display = 'block';
+  }
+</script>
+</body>
+</html>
