@@ -1,0 +1,1695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Membership | Dulwich Table Tennis Club</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #00C97A;
+    --green-dark: #009a5c;
+    --green-light: rgba(0,201,122,0.10);
+    --green-glow: rgba(0,201,122,0.25);
+    --navy: #0b1728;
+    --white: #ffffff;
+    --off-white: #f7f9fc;
+    --light-bg: #f0f4f8;
+    --card-bg: #ffffff;
+    --text-dark: #0d1b2a;
+    --text-mid: #2d4060;
+    --text-muted: #6b7fa0;
+    --border: rgba(0,0,0,0.08);
+    --shadow-sm: 0 2px 12px rgba(0,0,0,0.07);
+    --shadow-md: 0 8px 32px rgba(0,0,0,0.10);
+    --shadow-lg: 0 20px 60px rgba(0,0,0,0.13);
+    --shadow-green: 0 8px 32px rgba(0,201,122,0.25);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--white);
+    color: var(--text-dark);
+    overflow-x: hidden;
+  }
+
+  /* ─── SCROLL PROGRESS ─── */
+  #progress-bar {
+    position: fixed; top: 0; left: 0; height: 3px; z-index: 9999;
+    background: linear-gradient(90deg, var(--green), #00f598);
+    width: 0%; transition: width 0.1s;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5vw; height: 80px;
+    background: rgba(255,255,255,0.96);
+    border-bottom: 2px solid var(--green);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+    transition: box-shadow 0.3s;
+  }
+  nav.scrolled { box-shadow: 0 4px 30px rgba(0,0,0,0.13); }
+  .nav-logo {
+    text-decoration: none;
+    display: flex; align-items: center;
+    flex-shrink: 0;
+  }
+  .nav-logo img {
+    height: 68px; width: auto; display: block;
+    mix-blend-mode: multiply;
+    filter: contrast(1.05);
+    transition: opacity 0.2s;
+  }
+  .nav-logo img:hover { opacity: 0.85; }
+  .nav-links { display: flex; gap: 4px; list-style: none; }
+  .nav-links a {
+    color: var(--text-mid); text-decoration: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px; font-weight: 600;
+    letter-spacing: 1px; text-transform: uppercase;
+    padding: 8px 12px; border-radius: 4px;
+    transition: all 0.2s; white-space: nowrap;
+  }
+  .nav-links a:hover { color: var(--green); background: var(--green-light); }
+  .nav-links a.active { color: var(--green); }
+  .nav-cta {
+    background: var(--green) !important; color: #fff !important;
+    border-radius: 4px; padding: 10px 18px !important; font-weight: 700 !important;
+  }
+  .nav-cta:hover { background: var(--green-dark) !important; transform: scale(1.04); }
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 8px; }
+  .hamburger span { width: 26px; height: 2px; background: var(--text-dark); display: block; transition: 0.3s; border-radius: 2px; }
+  .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px,5px); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px,-5px); }
+
+  /* ─── MOBILE MENU ─── */
+  .mobile-menu {
+    display: none; flex-direction: column;
+    position: fixed; top: 80px; left: 0; right: 0; z-index: 999;
+    background: rgba(255,255,255,0.99);
+    padding: 20px 5vw 28px;
+    border-bottom: 2px solid var(--green);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  }
+  .mobile-menu.open { display: flex; animation: slideDown 0.25s ease; }
+  @keyframes slideDown { from { opacity:0; transform:translateY(-12px); } to { opacity:1; transform:translateY(0); } }
+  .mobile-menu a {
+    color: var(--text-dark); text-decoration: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 20px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.06);
+    transition: color 0.2s;
+  }
+  .mobile-menu a:hover { color: var(--green); }
+  .mobile-menu a.mobile-cta {
+    background: var(--green); color: #fff !important; text-align: center;
+    border-radius: 6px; padding: 14px; margin-top: 10px; border: none;
+  }
+
+  /* ═══════════════════════════════════════════
+     HERO — Two-column, matches index.html style
+  ═══════════════════════════════════════════ */
+  .page-hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 80px 5vw 0;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(140deg, #f0faf5 0%, #ffffff 55%, #eaf7f1 100%);
+  }
+
+  /* Dot-grid background pattern — identical to index.html */
+  .hero-bg-pattern {
+    position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    background-image: radial-gradient(circle, rgba(0,185,107,0.12) 1px, transparent 1px);
+    background-size: 36px 36px;
+    mask-image: linear-gradient(135deg, transparent 0%, rgba(0,0,0,0.4) 40%, transparent 100%);
+    -webkit-mask-image: linear-gradient(135deg, transparent 0%, rgba(0,0,0,0.4) 40%, transparent 100%);
+  }
+
+  /* Left green accent bar */
+  .hero-line-left {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 4px; z-index: 2;
+    background: linear-gradient(180deg, transparent 0%, #00b96b 25%, #00b96b 75%, transparent 100%);
+  }
+
+  /* Floating orbs */
+  .hero-orb {
+    position: absolute; border-radius: 50%; pointer-events: none; z-index: 0;
+    filter: blur(90px);
+  }
+  .hero-orb-1 {
+    width: 520px; height: 520px; right: 5%; top: 10%;
+    background: radial-gradient(circle, rgba(0,185,107,0.18) 0%, transparent 70%);
+    animation: orbFloat 9s ease-in-out infinite;
+  }
+  .hero-orb-2 {
+    width: 280px; height: 280px; left: 30%; top: 60%;
+    background: radial-gradient(circle, rgba(0,185,107,0.08) 0%, transparent 70%);
+    animation: orbFloat 12s 3s ease-in-out infinite reverse;
+  }
+  @keyframes orbFloat {
+    0%,100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-24px) scale(1.04); }
+  }
+
+  /* Decorative pulse rings */
+  .hero-accent-circle {
+    position: absolute; right: 18%; top: 50%; transform: translateY(-50%);
+    width: 440px; height: 440px; border-radius: 50%;
+    border: 1.5px solid rgba(0,185,107,0.18); pointer-events: none; z-index: 0;
+    animation: pulseRing 7s ease-in-out infinite;
+  }
+  .hero-accent-circle2 {
+    position: absolute; right: 22%; top: 50%; transform: translateY(-50%);
+    width: 560px; height: 560px; border-radius: 50%;
+    border: 1px solid rgba(0,185,107,0.09); pointer-events: none; z-index: 0;
+    animation: pulseRing 7s 2s ease-in-out infinite;
+  }
+  @keyframes pulseRing {
+    0%,100% { opacity:0.5; transform: translateY(-50%) scale(1); }
+    50% { opacity:1; transform: translateY(-50%) scale(1.02); }
+  }
+
+  /* ── TWO-COLUMN INNER LAYOUT ── */
+  .hero-inner {
+    position: relative; z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+    width: 100%;
+    min-height: calc(100vh - 80px);
+    padding: 80px 0 100px;
+  }
+
+  /* LEFT: text content */
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 20px;
+    padding-bottom: 40px;
+  }
+
+  /* Hero Logo */
+  .hero-logo-wrap {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+    animation: fadeUp 0.4s ease both;
+  }
+  .hero-logo-img {
+    height: 80px;
+    width: auto;
+    display: block;
+    mix-blend-mode: multiply;
+    filter: contrast(1.05) drop-shadow(0 4px 16px rgba(0,185,107,0.18));
+    transition: transform 0.3s;
+  }
+  .hero-logo-img:hover { transform: scale(1.04); }
+  .hero-logo-divider {
+    width: 1.5px;
+    height: 48px;
+    background: linear-gradient(180deg, transparent, rgba(0,185,107,0.5), transparent);
+    flex-shrink: 0;
+  }
+  .hero-logo-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .hero-logo-text strong {
+    font-family: 'Oswald', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dark);
+    line-height: 1.2;
+  }
+  .hero-logo-text span {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #00b96b;
+  }
+
+  /* Badge */
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(0,185,107,0.08);
+    border: 1px solid rgba(0,185,107,0.25);
+    color: #00963f;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 20px; margin-bottom: 26px;
+    animation: fadeUp 0.5s ease both;
+    width: fit-content;
+  }
+  .hero-badge-dot {
+    width: 6px; height: 6px; border-radius: 50%; background: #00b96b; flex-shrink: 0;
+    animation: pulseDot 1.8s ease-in-out infinite;
+  }
+  @keyframes pulseDot {
+    0%,100% { opacity:1; transform:scale(1); }
+    50% { opacity:0.3; transform:scale(0.5); }
+  }
+
+  /* Heading */
+  .hero-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(36px, 5vw, 64px);
+    line-height: 1.03; letter-spacing: 1.5px;
+    color: var(--text-dark);
+    text-transform: uppercase;
+    animation: fadeUp 0.5s 0.1s ease both;
+    margin-bottom: 0;
+  }
+  .hero-title .accent { color: #00b96b; }
+
+  /* Divider */
+  .hero-divider {
+    width: 52px; height: 3px;
+    background: linear-gradient(90deg, #00b96b, rgba(0,185,107,0.15));
+    margin: 20px 0 18px; border-radius: 2px;
+    animation: fadeUp 0.5s 0.15s ease both;
+  }
+
+  /* Subtitle */
+  .hero-sub {
+    font-size: 15px; font-weight: 400; line-height: 1.8;
+    color: var(--text-mid);
+    margin: 0 0 32px; max-width: 440px;
+    animation: fadeUp 0.5s 0.2s ease both;
+  }
+
+  /* CTA Buttons */
+  .hero-btns {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    animation: fadeUp 0.5s 0.3s ease both;
+  }
+  .btn-primary {
+    background: #00b96b; color: #fff;
+    padding: 13px 28px; border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    text-decoration: none; display: inline-block;
+    transition: all 0.25s; border: none; cursor: pointer;
+    position: relative; overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,185,107,0.28);
+  }
+  .btn-primary::after {
+    content: ''; position: absolute; inset: 0;
+    background: rgba(255,255,255,0.12); transform: translateX(-100%); transition: transform 0.3s;
+  }
+  .btn-primary:hover::after { transform: translateX(0); }
+  .btn-primary:hover { background: #009a56; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,185,107,0.38); }
+  .btn-outline {
+    background: transparent; color: var(--text-dark);
+    padding: 12px 24px; border-radius: 4px;
+    border: 2px solid rgba(0,0,0,0.18);
+    font-family: 'Inter', sans-serif;
+    font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    text-decoration: none; display: inline-block; transition: all 0.25s;
+  }
+  .btn-outline:hover { border-color: #00b96b; color: #00b96b; transform: translateY(-2px); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── RIGHT: Stats visual card ── */
+  .hero-visual {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    z-index: 2;
+    animation: fadeUp 0.6s 0.25s ease both;
+  }
+
+  /* Dashed decorative ring around card */
+  .hero-img-ring {
+    position: absolute;
+    top: -24px; left: -24px; right: -24px; bottom: -24px;
+    border-radius: 28px;
+    border: 2px dashed rgba(0,185,107,0.22);
+    pointer-events: none;
+    animation: ringRotate 22s linear infinite;
+  }
+  @keyframes ringRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+  /* Main navy stats card */
+  .hero-stats-card {
+    background: var(--navy);
+    border-radius: 18px;
+    padding: 32px 30px 30px;
+    width: 100%;
+    max-width: 400px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,185,107,0.14), 0 0 60px rgba(0,185,107,0.10);
+  }
+
+  /* Dot-grid texture on card */
+  .hero-stats-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: radial-gradient(circle, rgba(0,201,122,0.14) 1px, transparent 1px);
+    background-size: 26px 26px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Green glow blob */
+  .hero-stats-card::after {
+    content: '';
+    position: absolute; top: -60px; right: -60px;
+    width: 260px; height: 260px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,201,122,0.22) 0%, transparent 70%);
+    filter: blur(50px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .hero-stats-card > * { position: relative; z-index: 1; }
+
+  /* Card header label */
+  .stats-card-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase;
+    color: var(--green);
+    background: rgba(0,201,122,0.12);
+    border: 1px solid rgba(0,201,122,0.25);
+    padding: 4px 10px; border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 18px;
+  }
+
+  /* Card title */
+  .stats-card-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 18px; font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 18px;
+    line-height: 1.15;
+  }
+  .stats-card-title span { color: var(--green); }
+
+  /* Stat rows */
+  .stats-rows { display: flex; flex-direction: column; gap: 10px; }
+  .stat-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px;
+    padding: 13px 16px;
+    transition: background 0.25s, border-color 0.25s;
+  }
+  .stat-row:hover {
+    background: rgba(0,201,122,0.08);
+    border-color: rgba(0,201,122,0.25);
+  }
+  .stat-icon {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: rgba(0,201,122,0.15);
+    border: 1px solid rgba(0,201,122,0.25);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .stat-icon svg { width: 16px; height: 16px; }
+  .stat-info { flex: 1; }
+  .stat-value {
+    font-family: 'Oswald', sans-serif;
+    font-size: 18px; font-weight: 700;
+    color: #fff;
+    line-height: 1.1;
+    letter-spacing: 0.5px;
+  }
+  .stat-value em {
+    font-style: normal;
+    color: var(--green);
+  }
+  .stat-desc {
+    font-size: 12px; font-weight: 500;
+    color: rgba(255,255,255,0.48);
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    font-size: 10px;
+  }
+  .stat-pill {
+    background: rgba(0,201,122,0.15);
+    border: 1px solid rgba(0,201,122,0.28);
+    color: var(--green);
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Floating "Est. 2008" accent badge */
+  .hero-float-badge {
+    position: absolute;
+    top: -18px; right: -22px;
+    background: var(--green);
+    color: #fff;
+    font-family: 'Oswald', sans-serif;
+    font-size: 14px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 10px 18px; border-radius: 10px;
+    box-shadow: 0 8px 28px rgba(0,185,107,0.4);
+    z-index: 3;
+    animation: fadeUp 0.6s 0.55s ease both;
+  }
+
+  /* Card bottom strip */
+  .stats-card-footer {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .stats-card-footer-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green);
+    animation: pulseDot 2.2s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+  .stats-card-footer-text {
+    font-size: 12px; font-weight: 600;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .stats-card-footer-text span { color: rgba(255,255,255,0.7); }
+
+  /* ─── SECTION BASE ─── */
+  section {
+    padding: 80px 5vw;
+  }
+  .section-tag {
+    display: inline-block;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase;
+    color: var(--green);
+    background: var(--green-light);
+    padding: 6px 14px; border-radius: 30px;
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(28px, 4vw, 46px);
+    font-weight: 700;
+    color: var(--text-dark);
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+    margin-bottom: 12px;
+    line-height: 1.1;
+  }
+  .section-sub {
+    font-size: 16px; color: var(--text-muted);
+    max-width: 540px;
+    margin-bottom: 52px;
+    line-height: 1.65;
+  }
+
+  /* ─── PRICING SECTION ─── */
+  #pricing {
+    background: var(--off-white);
+  }
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    max-width: 860px;
+  }
+  .pricing-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 40px 36px;
+    box-shadow: var(--shadow-md);
+    border: 1.5px solid var(--border);
+    position: relative;
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex; flex-direction: column;
+  }
+  .pricing-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+  }
+  .pricing-card.popular {
+    border-color: var(--green);
+    box-shadow: var(--shadow-green), var(--shadow-md);
+  }
+  .pricing-card.popular:hover {
+    box-shadow: 0 24px 64px rgba(0,201,122,0.3), var(--shadow-lg);
+  }
+  .popular-badge {
+    position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+    background: var(--green); color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    padding: 5px 18px; border-radius: 20px;
+    white-space: nowrap;
+  }
+  .pricing-plan-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+  .pricing-price {
+    font-family: 'Oswald', sans-serif;
+    font-size: 64px; font-weight: 700;
+    color: var(--text-dark);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .pricing-price sup {
+    font-size: 28px;
+    vertical-align: super;
+    font-weight: 700;
+  }
+  .pricing-price-note {
+    font-size: 13px; color: var(--text-muted);
+    margin-bottom: 28px;
+  }
+  .pricing-divider {
+    height: 1px; background: var(--border);
+    margin-bottom: 24px;
+  }
+  .pricing-features {
+    list-style: none;
+    flex: 1;
+    margin-bottom: 32px;
+  }
+  .pricing-features li {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 15px; color: var(--text-mid);
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+    font-weight: 500;
+  }
+  .pricing-features li:last-child { border-bottom: none; }
+  .pricing-features li::before {
+    content: '';
+    width: 20px; height: 20px;
+    min-width: 20px;
+    background: var(--green-light);
+    border-radius: 50%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300C97A' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+    background-size: 12px; background-position: center; background-repeat: no-repeat;
+  }
+  .pricing-btn {
+    display: block;
+    text-align: center;
+    padding: 15px 28px;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.22s;
+    cursor: pointer;
+  }
+  .pricing-btn-outline {
+    background: transparent;
+    border: 2px solid var(--green);
+    color: var(--green);
+  }
+  .pricing-btn-outline:hover {
+    background: var(--green);
+    color: #fff;
+    transform: scale(1.02);
+  }
+  .pricing-btn-filled {
+    background: var(--green);
+    border: 2px solid var(--green);
+    color: #fff;
+    box-shadow: var(--shadow-green);
+  }
+  .pricing-btn-filled:hover {
+    background: var(--green-dark);
+    border-color: var(--green-dark);
+    transform: scale(1.02);
+  }
+
+  /* ─── COMING SOON ─── */
+  #coming-soon {
+    background: linear-gradient(140deg, #f0faf5 0%, #ffffff 55%, #eaf7f1 100%);
+    padding: 80px 5vw;
+  }
+  #coming-soon .section-tag,
+  #coming-soon .section-title { text-align: center; display: block; }
+  #coming-soon .section-title { margin-bottom: 40px; }
+
+  .coming-soon-card {
+    background: var(--navy);
+    border-radius: 20px;
+    max-width: 860px;
+    width: 100%;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,201,122,0.12);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: unset;
+  }
+  .coming-soon-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: radial-gradient(circle, rgba(0,201,122,0.10) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none; z-index: 0;
+  }
+  /* Left content pane */
+  .cs-left {
+    padding: 48px 40px;
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; justify-content: center;
+    border-right: 1px solid rgba(255,255,255,0.06);
+  }
+  /* Right form pane */
+  .cs-right {
+    padding: 48px 40px;
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; justify-content: center;
+    background: rgba(255,255,255,0.02);
+  }
+  .coming-soon-glow {
+    position: absolute; right: -40px; top: -40px;
+    width: 240px; height: 240px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,201,122,0.20) 0%, transparent 70%);
+    filter: blur(50px);
+    pointer-events: none; z-index: 0;
+  }
+  .coming-soon-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase;
+    color: var(--green);
+    background: rgba(0,201,122,0.12);
+    border: 1px solid rgba(0,201,122,0.28);
+    padding: 5px 12px; border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 16px;
+    width: fit-content;
+  }
+  .coming-soon-card h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(22px, 2.8vw, 32px);
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+  .coming-soon-card h3 span { color: var(--green); }
+  .coming-soon-card p {
+    font-size: 14px; color: rgba(255,255,255,0.55);
+    line-height: 1.7;
+    margin: 0;
+  }
+  /* Right pane: form label */
+  .cs-form-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 10px;
+  }
+  .cs-form-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 18px; font-weight: 700;
+    color: #fff; text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .cs-form-sub {
+    font-size: 13px; color: rgba(255,255,255,0.42);
+    margin-bottom: 24px; line-height: 1.5;
+  }
+  .notify-form {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .notify-input {
+    width: 100%;
+    padding: 13px 16px;
+    border-radius: 8px;
+    border: 1.5px solid rgba(255,255,255,0.10);
+    background: rgba(255,255,255,0.06);
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .notify-input::placeholder { color: rgba(255,255,255,0.30); }
+  .notify-input:focus { border-color: var(--green); background: rgba(255,255,255,0.09); }
+  .notify-btn {
+    padding: 13px 28px;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.22s;
+    box-shadow: 0 4px 16px rgba(0,201,122,0.30);
+  }
+  .notify-btn:hover { background: var(--green-dark); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,201,122,0.40); }
+  .notify-success {
+    display: none;
+    align-items: center; gap: 10px;
+    margin-top: 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px; font-weight: 600;
+    color: var(--green);
+  }
+  .notify-success.show { display: flex; }
+  .notify-success-icon {
+    width: 26px; height: 26px;
+    background: rgba(0,201,122,0.18);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+  }
+  /* Coming soon feature pills */
+  .cs-features {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-top: 20px;
+  }
+  .cs-feature-pill {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 600;
+    color: rgba(255,255,255,0.6);
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 5px 12px; border-radius: 20px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .cs-feature-pill::before {
+    content: '';
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green); flex-shrink: 0;
+  }
+  @media (max-width: 700px) {
+    .coming-soon-card { grid-template-columns: 1fr; }
+    .cs-left { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); padding: 36px 28px; }
+    .cs-right { padding: 32px 28px; }
+  }
+
+  /* ─── PROGRAMS ─── */
+  #programs {
+    background: var(--white);
+  }
+  .programs-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  .program-card {
+    background: var(--card-bg);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 24px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s;
+    cursor: default;
+  }
+  .program-card:hover {
+    border-color: var(--green);
+    box-shadow: var(--shadow-green);
+    transform: translateY(-5px);
+  }
+  .program-icon {
+    font-size: 40px;
+    margin-bottom: 16px;
+    display: block;
+    line-height: 1;
+  }
+  .program-card h4 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 18px; font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-dark);
+  }
+
+  /* ─── FAQ ─── */
+  #faq-section {
+    background: #eef2f7;
+  }
+  .faq-list {
+    max-width: 1100px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .faq-item {
+    background: var(--card-bg);
+    border: 1.5px solid #e0e6ef;
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .faq-item:hover { border-color: rgba(0,201,122,0.45); box-shadow: 0 4px 16px rgba(0,201,122,0.10); }
+  .faq-item.open { border-color: var(--green); box-shadow: 0 4px 20px rgba(0,201,122,0.14); }
+  .faq-q {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 22px 26px;
+    font-size: 15px; font-weight: 700;
+    color: var(--text-dark);
+    user-select: none;
+    gap: 12px;
+    font-family: 'Inter', sans-serif;
+  }
+  .faq-arrow {
+    color: var(--green);
+    font-size: 13px;
+    transition: transform 0.3s;
+    flex-shrink: 0;
+  }
+  .faq-item.open .faq-arrow { transform: rotate(180deg); }
+  .faq-a {
+    max-height: 0; overflow: hidden;
+    padding: 0 26px;
+    font-size: 14px; color: var(--text-muted);
+    line-height: 1.75;
+    transition: max-height 0.35s ease, padding 0.3s ease;
+  }
+  .faq-item.open .faq-a {
+    max-height: 300px;
+    padding: 0 26px 22px;
+  }
+  @media (max-width: 768px) {
+    .faq-list { grid-template-columns: 1fr; }
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: var(--navy);
+    color: rgba(255,255,255,0.7);
+    padding: 64px 5vw 0;
+    font-family: 'Inter', sans-serif;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 40px;
+    padding-bottom: 48px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .footer-logo-img {
+    height: 100px; width: auto;
+    mix-blend-mode: screen;
+    filter: brightness(1.2) contrast(1.1);
+    opacity: 1;
+    margin-bottom: 12px;
+    margin-left: -6px;
+    display: block;
+  }
+  .footer-logo-text {
+    font-family: 'Oswald', sans-serif;
+    font-size: 14px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+  .footer-logo-text span { color: var(--green); display: block; }
+  .footer-tagline {
+    font-size: 13px; line-height: 1.7;
+    color: rgba(255,255,255,0.45);
+    max-width: 280px;
+  }
+  .footer-col-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 18px;
+  }
+  .footer-links { list-style: none; }
+  .footer-links li { margin-bottom: 10px; }
+  .footer-links a {
+    font-size: 14px; color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--green); }
+  .footer-bottom {
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 14px;
+    padding: 20px 0;
+    font-size: 12px; color: rgba(255,255,255,0.35);
+    letter-spacing: 0.5px;
+  }
+  .footer-legal { display: flex; gap: 20px; }
+  .footer-legal a {
+    color: rgba(255,255,255,0.35); text-decoration: none;
+    font-size: 12px; transition: color 0.2s;
+  }
+  .footer-legal a:hover { color: var(--green); }
+
+  /* ─── WHATSAPP ─── */
+  .whatsapp-float {
+    position: fixed; bottom: 28px; right: 28px; z-index: 999;
+    width: 56px; height: 56px;
+    background: #25D366; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 24px rgba(37,211,102,0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .whatsapp-float:hover {
+    transform: scale(1.1);
+    box-shadow: 0 10px 32px rgba(37,211,102,0.55);
+  }
+
+  /* ─── LEGAL OVERLAY ─── */
+  .legal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 9000;
+    background: var(--white); overflow-y: auto;
+    padding: 48px 5vw;
+    scroll-behavior: smooth;
+  }
+  .legal-overlay.active { display: block; }
+  @media (max-width: 900px) {
+    .legal-overlay { padding-top: 96px; }
+  }
+  .legal-close {
+    background: var(--green-light); border: none;
+    color: var(--green); font-family: 'Inter', sans-serif;
+    font-size: 14px; font-weight: 700;
+    padding: 10px 20px; border-radius: 6px;
+    cursor: pointer; margin-bottom: 32px;
+    letter-spacing: 1px; text-transform: uppercase;
+    transition: background 0.2s;
+  }
+  .legal-close:hover { background: var(--green); color: #fff; }
+  .legal-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 36px; font-weight: 700;
+    color: var(--text-dark);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .legal-divider { height: 3px; background: var(--green); width: 60px; margin-bottom: 36px; }
+  .legal-section { margin-bottom: 28px; }
+  .legal-section h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 18px; font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+  }
+  .legal-section p, .legal-section li {
+    font-size: 15px; color: var(--text-mid);
+    line-height: 1.7;
+  }
+  .legal-section ul { padding-left: 20px; }
+  .legal-section li { margin-bottom: 6px; }
+  .legal-inner { max-width: 760px; margin: 0 auto; }
+
+  /* ─── SCROLL ANIMATIONS ─── */
+  .fade-in {
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+  }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+  .fade-in-left {
+    opacity: 0; transform: translateX(-28px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+  }
+  .fade-in-left.visible { opacity: 1; transform: translateX(0); }
+  .fade-in-right {
+    opacity: 0; transform: translateX(28px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+  }
+  .fade-in-right.visible { opacity: 1; transform: translateX(0); }
+  .fade-in-scale {
+    opacity: 0; transform: scale(0.94);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+  }
+  .fade-in-scale.visible { opacity: 1; transform: scale(1); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 1024px) {
+    .hero-inner {
+      gap: 32px;
+    }
+    .hero-stats-card {
+      padding: 36px 28px;
+    }
+    .hero-float-badge {
+      right: -8px;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .pricing-grid { grid-template-columns: 1fr; max-width: 480px; }
+    .programs-grid { grid-template-columns: repeat(2, 1fr); }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+
+    /* Hero stacks to single column on mobile */
+    .hero-inner {
+      grid-template-columns: 1fr;
+      min-height: auto;
+      padding: 60px 0 80px;
+      gap: 40px;
+    }
+    .page-hero {
+      min-height: auto;
+      padding-top: 100px;
+      padding-bottom: 60px;
+      align-items: flex-start;
+    }
+    .hero-visual {
+      justify-content: flex-start;
+    }
+    .hero-stats-card {
+      max-width: 100%;
+    }
+    .hero-float-badge {
+      top: -16px; right: 12px;
+    }
+    .hero-img-ring { display: none; }
+    .hero-accent-circle, .hero-accent-circle2 { display: none; }
+  }
+
+  @media (max-width: 600px) {
+    .programs-grid { grid-template-columns: repeat(2, 1fr); }
+    .footer-grid { grid-template-columns: 1fr; }
+    .coming-soon-card { padding: 40px 24px; }
+    .footer-bottom { flex-direction: column; text-align: center; }
+    .footer-legal { flex-wrap: wrap; justify-content: center; }
+    .hero-stats-card { padding: 32px 20px; }
+    .stat-value { font-size: 18px; }
+    .stats-card-title { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SCROLL PROGRESS -->
+<div id="progress-bar"></div>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a class="nav-logo" href="index.html">
+    <img src="https://nejyjogwbbubeqkrgqat.supabase.co/storage/v1/object/public/claudedrop-images/uploads/1778325935065_hu9xscz.png" alt="Dulwich TTC Logo">
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="club-account.html">Club Account</a></li>
+    <li><a href="membership.html" class="active">Membership</a></li>
+    <li><a href="contact.html">Contact Us</a></li>
+    <li><a href="index.html#services">Services</a></li>
+    <li><a href="https://form.jotform.com/70285212440345" target="_blank" class="nav-cta">Join Now</a></li>
+  </ul>
+  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html">Home</a>
+  <a href="club-account.html">Club Account</a>
+  <a href="membership.html" style="color:var(--green);">Membership</a>
+  <a href="contact.html">Contact Us</a>
+  <a href="index.html#services">Services</a>
+  <a href="https://form.jotform.com/70285212440345" target="_blank" class="mobile-cta">Join Now</a>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     HERO — Two-column, index.html style
+═══════════════════════════════════════════ -->
+<section class="page-hero">
+  <!-- Background elements -->
+  <div class="hero-bg-pattern"></div>
+  <div class="hero-line-left"></div>
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-accent-circle"></div>
+  <div class="hero-accent-circle2"></div>
+
+  <div class="hero-inner">
+
+    <!-- LEFT: Text content -->
+    <div class="hero-content">
+
+      <div class="hero-badge">
+        <span class="hero-badge-dot"></span>
+        South London's Premier Club
+      </div>
+
+      <h1 class="hero-title">
+        MEMBERSHIP<br><span class="accent">PLANS</span>
+      </h1>
+
+      <div class="hero-divider"></div>
+
+      <p class="hero-sub">
+        Find the right plan for your game. Affordable sessions, flexible options, and a welcoming community waiting for you — from beginners to seasoned competitors.
+      </p>
+
+      <div class="hero-btns">
+        <a href="#pricing" class="btn-primary">View Pricing</a>
+        <a href="https://form.jotform.com/70285212440345" target="_blank" class="btn-outline">Join Now</a>
+      </div>
+    </div>
+
+    <!-- RIGHT: Stats visual card -->
+    <div class="hero-visual">
+      <div style="position:relative; width:100%; max-width:480px;">
+        <!-- Floating "Est. 2008" badge -->
+        <div class="hero-float-badge">Est. 2008</div>
+
+        <!-- Dashed decorative ring -->
+        <div class="hero-img-ring"></div>
+
+        <!-- Dark navy stats card -->
+        <div class="hero-stats-card">
+          <div class="stats-card-label">Session Pricing</div>
+          <div class="stats-card-title">Simple, Transparent <span>Rates</span></div>
+
+          <div class="stats-rows">
+
+            <!-- Stat 1 -->
+            <div class="stat-row">
+              <div class="stat-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#00C97A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 6v6l4 2"/>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value"><em>£10</em></div>
+                <div class="stat-desc">Up to 2 Hours</div>
+              </div>
+              <div class="stat-pill">Standard</div>
+            </div>
+
+            <!-- Stat 2 -->
+            <div class="stat-row">
+              <div class="stat-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#00C97A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value"><em>£15</em></div>
+                <div class="stat-desc">Over 2 Hours</div>
+              </div>
+              <div class="stat-pill">Extended</div>
+            </div>
+
+            <!-- Stat 3 -->
+            <div class="stat-row">
+              <div class="stat-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#00C97A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value">Ages <em>6+</em></div>
+                <div class="stat-desc">Welcome</div>
+              </div>
+              <div class="stat-pill">All Levels</div>
+            </div>
+
+          </div>
+
+          <!-- Card footer -->
+          <div class="stats-card-footer">
+            <div class="stats-card-footer-dot"></div>
+            <div class="stats-card-footer-text">
+              <span>No joining fee</span> · No contracts · Just great table tennis
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="section-tag">Pricing</div>
+  <h2 class="section-title fade-in">CHOOSE YOUR PLAN</h2>
+  <p class="section-sub fade-in">Simple, transparent pricing. No hidden fees, no commitments — just great table tennis.</p>
+  <div class="pricing-grid">
+
+    <!-- Card 1 -->
+    <div class="pricing-card fade-in-scale">
+      <div class="pricing-plan-name">Standard Session</div>
+      <div class="pricing-price"><sup>£</sup>10</div>
+      <div class="pricing-price-note">Play up to 2 hours</div>
+      <div class="pricing-divider"></div>
+      <ul class="pricing-features">
+        <li>All tables access</li>
+        <li>Casual play</li>
+        <li>Pay via club account</li>
+      </ul>
+      <a href="club-account.html" class="pricing-btn pricing-btn-outline">Pay Now</a>
+    </div>
+
+    <!-- Card 2 — Popular -->
+    <div class="pricing-card popular fade-in-scale">
+      <div class="popular-badge">Most Popular</div>
+      <div class="pricing-plan-name">Extended Session</div>
+      <div class="pricing-price"><sup>£</sup>15</div>
+      <div class="pricing-price-note">Play over 2 hours</div>
+      <div class="pricing-divider"></div>
+      <ul class="pricing-features">
+        <li>Extended play</li>
+        <li>Coaching access</li>
+        <li>Priority booking</li>
+      </ul>
+      <a href="club-account.html" class="pricing-btn pricing-btn-filled">Pay Now</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- COMING SOON -->
+<section id="coming-soon">
+  <div class="section-tag">Coming Soon</div>
+  <h2 class="section-title fade-in">MORE PLANS INCOMING</h2>
+  <div class="coming-soon-card fade-in">
+    <div class="coming-soon-glow"></div>
+
+    <!-- Left: Info -->
+    <div class="cs-left">
+      <div class="coming-soon-label">Coming Soon</div>
+      <h3>Specially Curated <span>Plans</span></h3>
+      <p>We're crafting bespoke membership plans tailored to juniors, families, and dedicated competitors. Be the first to know when they launch.</p>
+      <div class="cs-features">
+        <span class="cs-feature-pill">Junior Plans</span>
+        <span class="cs-feature-pill">Family Bundles</span>
+        <span class="cs-feature-pill">Competitor Tier</span>
+        <span class="cs-feature-pill">Annual Passes</span>
+      </div>
+    </div>
+
+    <!-- Right: Email form -->
+    <div class="cs-right">
+      <div class="cs-form-label">Stay in the loop</div>
+      <div class="cs-form-title">Get Notified First</div>
+      <div class="cs-form-sub">Drop your email and we'll alert you the moment new plans go live.</div>
+      <div class="notify-form">
+        <input class="notify-input" id="notifyEmail" type="email" placeholder="Your email address">
+        <button class="notify-btn" onclick="handleNotify()">Notify Me →</button>
+      </div>
+      <div class="notify-success" id="notifySuccess">
+        <div class="notify-success-icon">✓</div>
+        You're on the list! We'll let you know as soon as new plans drop.
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PROGRAMS -->
+<section id="programs">
+  <div class="section-tag">Programs</div>
+  <h2 class="section-title fade-in">WHAT WE OFFER</h2>
+  <p class="section-sub fade-in">From competitive tournaments to social sessions, there's a program for every type of player.</p>
+  <div class="programs-grid">
+    <div class="program-card fade-in-scale">
+      <span class="program-icon">🏆</span>
+      <h4>Monthly Tournament</h4>
+    </div>
+    <div class="program-card fade-in-scale">
+      <span class="program-icon">🥇</span>
+      <h4>Junior League</h4>
+    </div>
+    <div class="program-card fade-in-scale">
+      <span class="program-icon">🏅</span>
+      <h4>Club Championship</h4>
+    </div>
+    <div class="program-card fade-in-scale">
+      <span class="program-icon">🤝</span>
+      <h4>Social Visits</h4>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq-section">
+  <div class="section-tag">Questions</div>
+  <h2 class="section-title fade-in">GOT QUESTIONS? WE'VE GOT ANSWERS.</h2>
+  <div class="faq-list">
+    <div class="faq-item fade-in" onclick="toggleFaq(this)">
+      <div class="faq-q">Do I need prior experience to join? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">Not at all! Dulwich TTC welcomes complete beginners through to advanced competitors. Our coaches will make sure you feel at home from your very first session.</div>
+    </div>
+    <div class="faq-item fade-in" onclick="toggleFaq(this)">
+      <div class="faq-q">What equipment do I need to bring? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">Nothing — we have rackets available at the club for all players. If you have your own paddle you're welcome to bring it, but it's certainly not required to get started.</div>
+    </div>
+    <div class="faq-item fade-in" onclick="toggleFaq(this)">
+      <div class="faq-q">When and how often do you meet? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">We run sessions multiple times per week. Check our contact page or WhatsApp us for the latest schedule and to find a session that suits you.</div>
+    </div>
+    <div class="faq-item fade-in" onclick="toggleFaq(this)">
+      <div class="faq-q">Is the club open to juniors and adults? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">Yes! We welcome players aged 6 and above. We have dedicated junior coaching sessions as well as adult and mixed open sessions throughout the week.</div>
+    </div>
+    <div class="faq-item fade-in" onclick="toggleFaq(this)">
+      <div class="faq-q">How do I book a coaching session? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">Simply top up your club account and pay for your session online. You can also contact us via WhatsApp or email to enquire about coaching availability.</div>
+    </div>
+    <div class="faq-item fade-in" onclick="toggleFaq(this)">
+      <div class="faq-q">Are there tournaments and competitions? <span class="faq-arrow">▼</span></div>
+      <div class="faq-a">Absolutely! We run monthly tournaments, a junior league, and a club championship each year. We also arrange social visits to other clubs across South London.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <a href="index.html">
+        <img class="footer-logo-img" src="https://nejyjogwbbubeqkrgqat.supabase.co/storage/v1/object/public/claudedrop-images/uploads/1778325943417_p5cosjc.png" alt="Dulwich Table Tennis Club">
+      </a>
+      <div class="footer-logo-text">DULWICH <span>TABLE TENNIS</span> CLUB</div>
+      <p class="footer-tagline">South London's Premier Table Tennis Club. Est. 2008. Welcoming players aged 6+ from beginners to advanced competitors. Company No. 16745371</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Quick Links</div>
+      <ul class="footer-links">
+        <li><a href="index.html#services">Coaching</a></li>
+        <li><a href="membership.html">Memberships</a></li>
+        <li><a href="contact.html">Contact Us</a></li>
+        <li><a href="index.html#faq">FAQ's</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Programs</div>
+      <ul class="footer-links">
+        <li><a href="index.html#champions">Monthly Tournament</a></li>
+        <li><a href="index.html#champions">Junior League</a></li>
+        <li><a href="index.html#champions">Club Championship</a></li>
+        <li><a href="index.html#coaches">Social Visits</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Have a Query?</div>
+      <ul class="footer-links">
+        <li style="font-size:20px; font-weight:700; color:#fff; letter-spacing:1px;">+447821763379</li>
+        <li style="color:rgba(255,255,255,0.5); font-size:12px; letter-spacing:1px; text-transform:uppercase; margin-top:8px;">Follow Us:</li>
+      </ul>
+      <div style="display:flex; gap:10px; margin-top:12px;">
+        <a href="https://www.instagram.com/dulwichtabletennis" target="_blank" style="width:40px;height:40px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;text-decoration:none;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a href="https://www.facebook.com/dulwichtabletennisclub/" target="_blank" style="width:40px;height:40px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;text-decoration:none;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+        <a href="https://www.youtube.com/@dulwichttclondon" target="_blank" style="width:40px;height:40px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;text-decoration:none;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#00C97A"/></svg>
+        </a>
+        <a href="https://www.linkedin.com/company/dulwich-ttc" target="_blank" style="width:40px;height:40px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;text-decoration:none;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Dulwich Table Tennis Club. All Rights Reserved. Company No. 16745371</span>
+    <div class="footer-legal">
+      <a href="#" onclick="openLegal('privacy'); return false;">Privacy Policy</a>
+      <a href="#" onclick="openLegal('terms'); return false;">Terms &amp; Conditions</a>
+      <a href="#" onclick="openLegal('safeguarding'); return false;">Safeguarding</a>
+    </div>
+  </div>
+</footer>
+
+<!-- LEGAL OVERLAYS -->
+<div class="legal-overlay" id="legal-privacy">
+  <div class="legal-inner">
+    <button class="legal-close" onclick="closeLegal('privacy')">← Back to Website</button>
+    <h1 class="legal-title">PRIVACY POLICY</h1>
+    <div class="legal-divider"></div>
+    <div class="legal-section">
+      <h3>Who We Are</h3>
+      <p>Dulwich Table Tennis Club ("DTTC", "we", "us", "our") is a sports club based at Harris Girls Academy, SE22 0NR, South London. Company Number: 16745371. We are committed to protecting and respecting your privacy.</p>
+    </div>
+    <div class="legal-section">
+      <h3>Information We Collect</h3>
+      <ul>
+        <li>Full name, email address, and phone number</li>
+        <li>Date of birth (for junior members and competition registration)</li>
+        <li>Emergency contact details</li>
+        <li>Payment information (processed securely via third-party providers)</li>
+        <li>Photographs taken at club sessions or events (with consent)</li>
+      </ul>
+    </div>
+    <div class="legal-section">
+      <h3>How We Use Your Information</h3>
+      <ul>
+        <li>Process your membership and session bookings</li>
+        <li>Communicate important club news, schedule changes, and updates</li>
+        <li>Register you or your child for competitions and leagues</li>
+        <li>Ensure the safety and safeguarding of all members</li>
+        <li>Comply with legal obligations</li>
+      </ul>
+    </div>
+    <div class="legal-section">
+      <h3>Data Retention</h3>
+      <p>We retain your personal data for as long as you remain an active member or as required by law. You may request deletion of your data at any time by contacting us at info@dulwichttc.com.</p>
+    </div>
+    <div class="legal-section">
+      <h3>Your Rights</h3>
+      <p>Under UK GDPR, you have the right to access, correct, delete, and restrict the processing of your personal data. Contact us at info@dulwichttc.com.</p>
+    </div>
+    <div class="legal-section">
+      <h3>Contact</h3>
+      <p>For any privacy-related queries, contact us at: info@dulwichttc.com or +44 7821 763379.</p>
+    </div>
+  </div>
+</div>
+
+<div class="legal-overlay" id="legal-terms">
+  <div class="legal-inner">
+    <button class="legal-close" onclick="closeLegal('terms')">← Back to Website</button>
+    <h1 class="legal-title">TERMS &amp; CONDITIONS</h1>
+    <div class="legal-divider"></div>
+    <div class="legal-section">
+      <h3>Acceptance of Terms</h3>
+      <p>By using our services, attending sessions, or becoming a member of Dulwich Table Tennis Club, you agree to be bound by these Terms and Conditions.</p>
+    </div>
+    <div class="legal-section">
+      <h3>Membership &amp; Payments</h3>
+      <ul>
+        <li>Membership fees are payable monthly or as agreed at time of joining</li>
+        <li>Session booking fees are non-refundable unless cancelled with 48 hours notice</li>
+        <li>DTTC reserves the right to amend pricing with 30 days notice to members</li>
+        <li>Membership is personal and non-transferable</li>
+      </ul>
+    </div>
+    <div class="legal-section">
+      <h3>Conduct &amp; Behaviour</h3>
+      <ul>
+        <li>Treat coaches, staff, and other players with respect at all times</li>
+        <li>Follow instructions given by coaches and club officials</li>
+        <li>Refrain from any abusive, discriminatory or aggressive behaviour</li>
+        <li>Take care of club equipment and facilities</li>
+      </ul>
+    </div>
+    <div class="legal-section">
+      <h3>Health &amp; Safety</h3>
+      <p>Members participate in club activities at their own risk. DTTC is not liable for injuries sustained during training or competition unless caused by negligence on our part.</p>
+    </div>
+    <div class="legal-section">
+      <h3>Governing Law</h3>
+      <p>These terms are governed by and construed in accordance with the laws of England and Wales.</p>
+    </div>
+  </div>
+</div>
+
+<div class="legal-overlay" id="legal-safeguarding">
+  <div class="legal-inner">
+    <button class="legal-close" onclick="closeLegal('safeguarding')">← Back to Website</button>
+    <h1 class="legal-title">SAFEGUARDING POLICY</h1>
+    <div class="legal-divider"></div>
+    <div class="legal-section">
+      <h3>Our Commitment</h3>
+      <p>Dulwich Table Tennis Club is fully committed to the safety and welfare of all children and young people in our care. The wellbeing of every player is our highest priority.</p>
+    </div>
+    <div class="legal-section">
+      <h3>DBS Checks</h3>
+      <p>All coaches and staff who work with children at DTTC hold a valid Enhanced DBS check, renewed regularly in line with best practice guidelines.</p>
+    </div>
+    <div class="legal-section">
+      <h3>Code of Conduct for Coaches</h3>
+      <ul>
+        <li>Coaches never work alone with a child in a closed, private setting</li>
+        <li>Physical contact is limited to what is necessary for instruction</li>
+        <li>All coaches are trained in safeguarding awareness and first aid</li>
+        <li>Any concerns are reported immediately to the Club Welfare Officer</li>
+      </ul>
+    </div>
+    <div class="legal-section">
+      <h3>Reporting Concerns</h3>
+      <p>If you have any concerns about the welfare or safety of a child at DTTC, contact us at info@dulwichttc.com or call +44 7821 763379. For urgent concerns: NSPCC helpline 0808 800 5000.</p>
+    </div>
+    <div class="legal-section">
+      <h3>Review</h3>
+      <p>This safeguarding policy is reviewed annually. Last reviewed: January 2026.</p>
+    </div>
+  </div>
+</div>
+
+<!-- FLOATING WHATSAPP -->
+<a href="https://wa.me/447821763379" target="_blank" class="whatsapp-float" title="Chat on WhatsApp">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="30" height="30" fill="white">
+    <path d="M16 2C8.268 2 2 8.268 2 16c0 2.496.65 4.84 1.785 6.875L2 30l7.344-1.75A13.93 13.93 0 0016 30c7.732 0 14-6.268 14-14S23.732 2 16 2zm0 25.5a11.43 11.43 0 01-5.836-1.602l-.418-.247-4.357 1.04 1.078-4.243-.272-.437A11.457 11.457 0 014.5 16C4.5 9.597 9.597 4.5 16 4.5S27.5 9.597 27.5 16 22.403 27.5 16 27.5zm6.29-8.605c-.345-.172-2.04-1.006-2.356-1.12-.315-.117-.545-.172-.774.172-.23.344-.888 1.12-1.09 1.35-.2.23-.4.258-.745.086-.344-.172-1.452-.535-2.766-1.707-1.022-.912-1.712-2.037-1.913-2.382-.2-.344-.021-.53.15-.701.155-.154.345-.4.517-.6.172-.2.23-.344.345-.573.115-.23.057-.43-.029-.601-.086-.172-.774-1.866-1.06-2.555-.28-.672-.564-.58-.774-.59l-.66-.012c-.23 0-.6.086-.915.43-.315.344-1.203 1.176-1.203 2.868 0 1.693 1.232 3.328 1.404 3.558.172.23 2.426 3.703 5.878 5.193.822.355 1.463.567 1.963.725.824.263 1.574.226 2.167.137.66-.099 2.04-.833 2.328-1.637.287-.803.287-1.491.2-1.635-.086-.144-.315-.23-.66-.402z"/>
+  </svg>
+</a>
+
+<script>
+  // ─── SCROLL PROGRESS BAR ───
+  window.addEventListener('scroll', () => {
+    const scrollTop = document.documentElement.scrollTop;
+    const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    document.getElementById('progress-bar').style.width = (scrollTop / docHeight * 100) + '%';
+    document.getElementById('mainNav').classList.toggle('scrolled', scrollTop > 20);
+  });
+
+  // ─── MOBILE MENU ───
+  function toggleMenu() {
+    const menu = document.getElementById('mobileMenu');
+    const hamburger = document.getElementById('hamburger');
+    menu.classList.toggle('open');
+    hamburger.classList.toggle('open');
+  }
+
+  // ─── FAQ TOGGLE ───
+  function toggleFaq(el) { el.classList.toggle('open'); }
+
+  // ─── NOTIFY ME ───
+  function handleNotify() {
+    const email = document.getElementById('notifyEmail').value.trim();
+    if (!email || !email.includes('@')) {
+      document.getElementById('notifyEmail').focus();
+      return;
+    }
+    document.getElementById('notifySuccess').classList.add('show');
+    document.getElementById('notifyEmail').value = '';
+    document.querySelector('.notify-btn').textContent = '✓ Subscribed';
+    document.querySelector('.notify-btn').style.background = 'var(--green-dark)';
+  }
+
+  // ─── LEGAL OVERLAYS ───
+  function openLegal(type) {
+    const el = document.getElementById('legal-' + type);
+    el.classList.add('active');
+    el.scrollTop = 0;
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLegal(type) {
+    document.getElementById('legal-' + type).classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      ['privacy','terms','safeguarding'].forEach(t => {
+        document.getElementById('legal-' + t).classList.remove('active');
+      });
+      document.body.style.overflow = '';
+    }
+  });
+
+  // ─── INTERSECTION OBSERVER (scroll animations) ───
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right, .fade-in-scale').forEach(el => {
+    observer.observe(el);
+  });
+
+  // ─── STAGGER DELAYS ───
+  document.querySelectorAll('.pricing-grid .fade-in-scale').forEach((card, i) => {
+    card.style.transitionDelay = (i * 0.14) + 's';
+  });
+  document.querySelectorAll('.programs-grid .fade-in-scale').forEach((card, i) => {
+    card.style.transitionDelay = (i * 0.10) + 's';
+  });
+  document.querySelectorAll('.faq-list .fade-in').forEach((item, i) => {
+    item.style.transitionDelay = (i * 0.08) + 's';
+  });
+
+  // ─── SECTION TAG / TITLE FADE ───
+  document.querySelectorAll('section').forEach(sec => {
+    const tag = sec.querySelector('.section-tag');
+    const title = sec.querySelector('.section-title');
+    if (tag && !tag.classList.contains('fade-in')) {
+      tag.classList.add('fade-in');
+      tag.style.transitionDelay = '0s';
+      observer.observe(tag);
+    }
+    if (title && !title.classList.contains('fade-in')) {
+      title.classList.add('fade-in');
+      title.style.transitionDelay = '0.1s';
+      observer.observe(title);
+    }
+  });
+
+  // ─── SMOOTH SCROLL for hero CTA ───
+  document.querySelector('a[href="#pricing"]').addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelector('#pricing').scrollIntoView({ behavior: 'smooth' });
+  });
+</script>
+</body>
+</html>
